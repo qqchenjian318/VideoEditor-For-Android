@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 public class CustomGlSurfaceView extends GLSurfaceView{
     public CustomGlSurfaceView(Context context) {
         this(context,null);
+
     }
 
     public CustomGlSurfaceView(Context context, AttributeSet attrs) {
