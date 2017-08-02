@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/VideoEditor.iml" filepath="$PROJECT_DIR$/VideoEditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VideoEditor-For-Android.iml" filepath="$PROJECT_DIR$/VideoEditor-For-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
