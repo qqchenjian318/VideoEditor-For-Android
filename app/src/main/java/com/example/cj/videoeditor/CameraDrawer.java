@@ -1,129 +1,196 @@
 package com.example.cj.videoeditor;
 
 import android.content.res.Resources;
+import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+import com.example.cj.videoeditor.filter.AFilter;
+import com.example.cj.videoeditor.filter.ShowFilter;
+import com.example.cj.videoeditor.record.video.TextureMovieEncoder;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created by cj on 2017/8/2.
- * desc 负责将数据绘制在surfaceView上面
+ * desc 管理图像绘制的类
+ * 主要用于管理各种滤镜、画面旋转、视频编码录制等
  */
 
-public class CameraDrawer {
-    private final String vertexShaderCode =
-            "attribute vec4 vPosition;" +
-                    "attribute vec2 inputTextureCoordinate;" +
-                    "varying vec2 textureCoordinate;" +
-                    "void main()" +
-                    "{"+
-                    "gl_Position = vPosition;"+
-                    "textureCoordinate = inputTextureCoordinate;" +
-                    "}";
+public class CameraDrawer implements GLSurfaceView.Renderer {
 
-    private final String fragmentShaderCode =
-            "#extension GL_OES_EGL_image_external : require\n"+
-                    "precision mediump float;" +
-                    "varying vec2 textureCoordinate;\n" +
-                    "uniform samplerExternalOES s_texture;\n" +
-                    "void main() {" +
-                    "  gl_FragColor = texture2D( s_texture, textureCoordinate );\n" +
-                    "}";
-    private FloatBuffer vertexBuffer, textureVerticesBuffer;
-    private ShortBuffer  drawListBuffer;
-    private final int mProgram;
-    private int mPositionHandle;
-    private int mTextureCoordHandle;
-    private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
-    // number of coordinates per vertex in this array
-    private static final int COORDS_PER_VERTEX = 2;
+    private final AFilter noFilter;
+    private SurfaceTexture mSurfaceTextrue;
+    /**预览数据的宽高*/
+    private int mPreviewWidth=0,mPreviewHeight=0;
+    /**控件的宽高*/
+    private int width = 0,height = 0;
 
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private TextureMovieEncoder videoEncoder;
+    private boolean recordingEnabled;
+    private int recordingStatus;
+    private static final int RECORDING_OFF = 0;
+    private static final int RECORDING_ON = 1;
+    private static final int RECORDING_RESUMED = 2;
+    private static final int RECORDING_PAUSE=3;
+    private static final int RECORDING_RESUME=4;
+    private static final int RECORDING_PAUSED=5;
+    private String savePath;
 
-    /**顶点坐标*/
-    static float squareCoords[] = {
-            -1.0f,  1.0f,
-            -1.0f, -1.0f,
-            1.0f, -1.0f,
-            1.0f,  1.0f,
-    };
-    /**纹理坐标*/
-    static float textureVertices[] = {
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-    };
 
     public CameraDrawer(Resources resources){
-        /**Buffer的初始化*/
-        ByteBuffer bb = ByteBuffer.allocateDirect(squareCoords.length * 4);
-        bb.order(ByteOrder.nativeOrder());
-        vertexBuffer = bb.asFloatBuffer();
-        vertexBuffer.put(squareCoords);
-        vertexBuffer.position(0);
+        //初始化一个滤镜 也可以叫控制器
+        noFilter = new ShowFilter(resources);
 
-        // initialize byte buffer for the draw list
-        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
-        dlb.order(ByteOrder.nativeOrder());
-        drawListBuffer = dlb.asShortBuffer();
-        drawListBuffer.put(drawOrder);
-        drawListBuffer.position(0);
+        recordingEnabled = false;
+   }
 
-        ByteBuffer bb2 = ByteBuffer.allocateDirect(textureVertices.length * 4);
-        bb2.order(ByteOrder.nativeOrder());
-        textureVerticesBuffer = bb2.asFloatBuffer();
-        textureVerticesBuffer.put(textureVertices);
-        textureVerticesBuffer.position(0);
-
-        int vertexShader    = uLoadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
-        int fragmentShader  = uLoadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-        mProgram = GLES20.glCreateProgram();             // create empty OpenGL ES Program
-        GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
-        GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
-        GLES20.glLinkProgram(mProgram);                  // creates OpenGL ES program executables
-    }
-    public void draw(float[] mtx)
-    {
-        GLES20.glUseProgram(mProgram);
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture);
-
-        // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-
-        // Prepare the <insert shape here> coordinate data
-        GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
-
-        mTextureCoordHandle = GLES20.glGetAttribLocation(mProgram, "inputTextureCoordinate");
-        GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
-
-//        textureVerticesBuffer.clear();
-//        textureVerticesBuffer.put( transformTextureCoordinates( textureVertices, mtx ));
-//        textureVerticesBuffer.position(0);
-        GLES20.glVertexAttribPointer(mTextureCoordHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, textureVerticesBuffer);
-
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
-        GLES20.glDisableVertexAttribArray(mTextureCoordHandle);
-    }
-    public static int uLoadShader(int shaderType,String source){
-        int shader= GLES20.glCreateShader(shaderType);
-        if(0!=shader){
-            GLES20.glShaderSource(shader,source);
-            GLES20.glCompileShader(shader);
+    @Override
+    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        int textureID = createTextureID();
+        mSurfaceTextrue = new SurfaceTexture(textureID);
+        noFilter.create();
+        noFilter.setTextureId(textureID);
+        if (recordingEnabled){
+            recordingStatus = RECORDING_RESUMED;
+        } else{
+            recordingStatus = RECORDING_OFF;
         }
-        return shader;
+    }
+
+
+    @Override
+    public void onSurfaceChanged(GL10 gl10, int i, int i1) {
+        width = i;
+        height = i1;
+        GLES20.glViewport(0,0,width,height);
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl10) {
+        /**更新界面中的数据*/
+        mSurfaceTextrue.updateTexImage();
+
+        if (recordingEnabled){
+            /**说明是录制状态*/
+            switch (recordingStatus){
+                case RECORDING_OFF:
+                    videoEncoder = new TextureMovieEncoder();
+                    videoEncoder.setPreviewSize(mPreviewWidth,mPreviewHeight);
+                    videoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(
+                            savePath, mPreviewWidth, mPreviewHeight,
+                            3500000, EGL14.eglGetCurrentContext(),
+                            null));
+                    recordingStatus = RECORDING_ON;
+                    break;
+                case RECORDING_ON:
+                case RECORDING_PAUSE:
+                    break;
+                case RECORDING_RESUMED:
+                    videoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
+                    videoEncoder.resumeRecording();
+                    recordingStatus = RECORDING_ON;
+                    break;
+
+                case RECORDING_RESUME:
+                    videoEncoder.resumeRecording();
+                    recordingStatus=RECORDING_ON;
+                    break;
+                case RECORDING_PAUSED: videoEncoder.pauseRecording();
+                    recordingStatus=RECORDING_PAUSED;
+
+                    break;
+                default:
+                    throw new RuntimeException("unknown recording status "+recordingStatus);
+            }
+
+        }else {
+            switch (recordingStatus) {
+                case RECORDING_ON:
+                case RECORDING_RESUMED:
+                case RECORDING_PAUSE:
+                case RECORDING_RESUME:
+                case RECORDING_PAUSED:
+                    videoEncoder.stopRecording();
+                    recordingStatus = RECORDING_OFF;
+                    break;
+                case RECORDING_OFF:
+                    break;
+                default:
+                    throw new RuntimeException("unknown recording status " + recordingStatus);
+            }
+        }
+        noFilter.draw();
+    }
+    /**设置预览效果的size*/
+    public void setPreviewSize(int width,int height){
+        if (mPreviewWidth != width || mPreviewHeight != height){
+            mPreviewWidth = width;
+            mPreviewHeight = height;
+        }
+        Log.e("hero","--setPreviewSize-=="+width+"---"+height);
+    }
+    //根据摄像头设置纹理映射坐标
+    public void setCameraId(int id) {
+        noFilter.setFlag(id);
+    }
+    public void startRecord() {
+        recordingEnabled=true;
+    }
+
+    public void stopRecord() {
+        recordingEnabled=false;
+    }
+
+    public void setSavePath(String path) {
+        this.savePath=path;
+    }
+    public SurfaceTexture getTexture() {
+        return mSurfaceTextrue;
+    }
+    public void onPause(boolean auto) {
+        if(auto){
+            videoEncoder.pauseRecording();
+            if(recordingStatus==RECORDING_ON){
+                recordingStatus=RECORDING_PAUSED;
+            }
+            return;
+        }
+        if(recordingStatus==RECORDING_ON){
+            recordingStatus=RECORDING_PAUSE;
+        }
+    }
+
+    public void onResume(boolean auto) {
+        if(auto){
+            if(recordingStatus==RECORDING_PAUSED){
+                recordingStatus=RECORDING_RESUME;
+            }
+            return;
+        }
+        if(recordingStatus==RECORDING_PAUSED){
+            recordingStatus=RECORDING_RESUME;
+        }
+    }
+
+    /**创建显示的texture*/
+    private int createTextureID() {
+        int[] texture = new int[1];
+        GLES20.glGenTextures(1, texture, 0);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture[0]);
+        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
+        return texture[0];
     }
 }

@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <com.example.cj.videoeditor.CameraView
+    <com.example.cj.videoeditor.widget.CameraView
         android:id="@+id/camera_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+    <com.example.cj.videoeditor.widget.CircularProgressView
+        android:id="@+id/mCapture"
+        android:background="@drawable/bt_capture"
+        android:layout_gravity="bottom|center"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:clickable="true" />
+
+</FrameLayout>
