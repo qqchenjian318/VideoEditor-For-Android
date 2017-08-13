@@ -3,6 +3,7 @@ package com.example.cj.videoeditor.widget;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.GLES11Ext;
@@ -12,9 +13,11 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.example.cj.videoeditor.CameraDrawer;
+import com.example.cj.videoeditor.MyApplication;
 import com.example.cj.videoeditor.camera.CameraController;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -92,6 +95,12 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
         if (isSetParm){
             mCameraDrawer.onDrawFrame(gl);
         }
+    }
+    /**
+     * 摄像头聚焦
+     * */
+    public void onFocus(Point point, Camera.AutoFocusCallback callback){
+        mCamera.onFocus(point,callback);
     }
 
     public int getCameraId(){

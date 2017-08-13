@@ -1,16 +1,22 @@
 package com.example.cj.videoeditor.activity;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.cj.videoeditor.Constants;
+import com.example.cj.videoeditor.MyApplication;
 import com.example.cj.videoeditor.R;
+import com.example.cj.videoeditor.camera.SensorControler;
 import com.example.cj.videoeditor.widget.CameraView;
 import com.example.cj.videoeditor.widget.CircularProgressView;
+import com.example.cj.videoeditor.widget.FocusImageView;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -22,11 +28,12 @@ import java.util.concurrent.Executors;
  * 主要包括 音视频录制、断点续录、对焦等功能
  */
 
-public class RecorderedActivity extends Activity implements View.OnClickListener {
+public class RecorderedActivity extends Activity implements View.OnClickListener, View.OnTouchListener, SensorControler.CameraFocusListener {
 
     private CameraView mCameraView;
     private CircularProgressView mCapture;
-    private static final int maxTime = 2000;//最长录制20s
+    private FocusImageView mFocus;
+    private static final int maxTime = 20000;//最长录制20s
     private boolean pausing = false;
     private boolean recordFlag = false;//是否正在录制
 
@@ -36,22 +43,69 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
     long timeCount = 0;//用于记录录制时间
     private boolean autoPausing = false;
     ExecutorService executorService;
+    private SensorControler mSensorControler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorde);
         executorService = Executors.newSingleThreadExecutor();
+        mSensorControler = SensorControler.getInstance();
+        mSensorControler.setCameraFocusListener(this);
         initView();
     }
 
     private void initView() {
         mCameraView = (CameraView) findViewById(R.id.camera_view);
         mCapture = (CircularProgressView) findViewById(R.id.mCapture);
+        mFocus = (FocusImageView) findViewById(R.id.focusImageView);
+
+        mCameraView.setOnTouchListener(this);
         mCapture.setTotal(maxTime);
         mCapture.setOnClickListener(this);
     }
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (mCameraView.getCameraId() == 1) {
+            return false;
+        }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                float sRawX = event.getRawX();
+                float sRawY = event.getRawY();
+                float rawY = sRawY * MyApplication.screenWidth / MyApplication.screenHeight;
+                float temp = sRawX;
+                float rawX = rawY;
+                rawY = (MyApplication.screenWidth - temp) * MyApplication.screenHeight / MyApplication.screenWidth;
 
+                Point point = new Point((int) rawX, (int) rawY);
+                mCameraView.onFocus(point, callback);
+                mFocus.startFocus(new Point((int) sRawX, (int) sRawY));
+        }
+        return true;
+    }
+    Camera.AutoFocusCallback callback = new Camera.AutoFocusCallback() {
+        @Override
+        public void onAutoFocus(boolean success, Camera camera) {
+            //聚焦之后根据结果修改图片
+            Log.e("hero","----onAutoFocus===="+success);
+            if (success) {
+                mFocus.onFocusSuccess();
+            } else {
+                //聚焦失败显示的图片
+                mFocus.onFocusFailed();
+
+            }
+        }
+    };
+    @Override
+    public void onFocus() {
+        if (mCameraView.getCameraId() == 1) {
+            return;
+        }
+        Point point = new Point(MyApplication.screenWidth / 2, MyApplication.screenHeight / 2);
+        mCameraView.onFocus(point, callback);
+    }
     @Override
     public void onBackPressed() {
         if (recordFlag) {
@@ -144,4 +198,7 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
             }
         });
     }
+
+
+
 }

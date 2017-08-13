@@ -7,5 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <declare-styleable name="FocusImageView">
+        <attr name="focus_focusing_id" format="integer" />
+        <attr name="focus_success_id" format="integer" />
+        <attr name="focus_fail_id" format="integer" />
+    </declare-styleable>
 
 </resources>

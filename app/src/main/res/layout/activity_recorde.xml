@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <com.example.cj.videoeditor.widget.CameraView
         android:id="@+id/camera_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.example.cj.videoeditor.widget.CircularProgressView
+            android:id="@+id/mCapture"
+            android:background="@drawable/bt_capture"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:clickable="true" />
+        <com.example.cj.videoeditor.widget.FocusImageView
+            android:id="@+id/focusImageView"
+            android:layout_width="75dip"
+            android:layout_height="75dip"
+            android:visibility="invisible"
+            app:focus_fail_id="@mipmap/focus_focus_failed"
+            app:focus_focusing_id="@mipmap/focus_focusing"
+            app:focus_success_id="@mipmap/focus_focused" />
 
-    <com.example.cj.videoeditor.widget.CircularProgressView
-        android:id="@+id/mCapture"
-        android:background="@drawable/bt_capture"
-        android:layout_gravity="bottom|center"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
-        android:clickable="true" />
+    </RelativeLayout>
+
+
 
 </FrameLayout>
