@@ -1,6 +1,7 @@
 package com.example.cj.videoeditor;
 
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
@@ -9,9 +10,11 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.example.cj.videoeditor.filter.AFilter;
+import com.example.cj.videoeditor.filter.GroupFilter;
 import com.example.cj.videoeditor.filter.NoFilter;
 import com.example.cj.videoeditor.filter.OesFilter;
 import com.example.cj.videoeditor.filter.ShowFilter;
+import com.example.cj.videoeditor.filter.WaterMarkFilter;
 import com.example.cj.videoeditor.record.video.TextureMovieEncoder;
 import com.example.cj.videoeditor.utils.MatrixUtils;
 
@@ -29,6 +32,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
 
     private final AFilter showFilter;
     private final AFilter drawFilter;
+
     private SurfaceTexture mSurfaceTextrue;
     /**预览数据的宽高*/
     private int mPreviewWidth=0,mPreviewHeight=0;
@@ -49,6 +53,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     private int[] fFrame = new int[1];
     private int[] fTexture = new int[1];
     private float[] OM;
+    private final GroupFilter mBeFilter;
 
 
     public CameraDrawer(Resources resources){
@@ -61,16 +66,33 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         MatrixUtils.flip(OM,false,true);//矩阵上下翻转
         drawFilter.setMatrix(OM);
 
+        mBeFilter = new GroupFilter(resources);
+
+
+        WaterMarkFilter waterMarkFilter = new WaterMarkFilter(resources);
+        waterMarkFilter.setWaterMark(BitmapFactory.decodeResource(resources,R.mipmap.watermark));
+        waterMarkFilter.setPosition(30,1150,0,0);
+        addFilter(waterMarkFilter);
+
         recordingEnabled = false;
    }
+
+    private void addFilter(AFilter filter) {
+        /**抵消本身的颠倒操作*/
+        filter.setMatrix(OM);
+        mBeFilter.addFilter(filter);
+    }
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         textureID = createTextureID();
         mSurfaceTextrue = new SurfaceTexture(textureID);
+
+        drawFilter.create();
+//        drawFilter.setTextureId(textureID);
         showFilter.create();
         showFilter.setTextureId(textureID);
-        drawFilter.create();
+        mBeFilter.create();
 
 
         if (recordingEnabled){
@@ -89,6 +111,8 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         GLES20.glGenFramebuffers(1,fFrame,0);
         /**根据纹理数量 返回的纹理索引*/
         GLES20.glGenTextures(1, fTexture, 0);
+        GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, width,
+                height);
         /**将生产的纹理名称和对应纹理进行绑定*/
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fTexture[0]);
         /**根据指定的参数 生产一个2D的纹理 调用该函数前  必须调用glBindTexture以指定要操作的纹理*/
@@ -107,10 +131,12 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
                 GLES20.GL_TEXTURE_2D, fTexture[0], 0);
         GLES20.glViewport(0,0,mPreviewWidth,mPreviewHeight);
-        drawFilter.setTextureId(fTexture[0]);
         drawFilter.draw();
         //解绑
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER,0);
+        mBeFilter.setTextureId(fTexture[0]);
+        mBeFilter.draw();
+
 
         if (recordingEnabled){
             /**说明是录制状态*/
@@ -162,14 +188,15 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
                     throw new RuntimeException("unknown recording status " + recordingStatus);
             }
         }
-
-        if (videoEncoder != null && recordingEnabled && recordingStatus == RECORDING_ON){
-            videoEncoder.setTextureId(fTexture[0]);
-            videoEncoder.frameAvailable(mSurfaceTextrue);
-        }
         /**绘制显示的filter*/
         GLES20.glViewport(0,0,width,height);
+//        showFilter.setTextureId(mBeFilter.getOutputTexture());
         showFilter.draw();
+        if (videoEncoder != null && recordingEnabled && recordingStatus == RECORDING_ON){
+            videoEncoder.setTextureId(mBeFilter.getOutputTexture());
+            videoEncoder.frameAvailable(mSurfaceTextrue);
+        }
+
 
     }
     /**设置预览效果的size*/
