@@ -62,6 +62,7 @@ public class GroupFilter extends AFilter{
         updateFilter();
         textureIndex=0;
         GLES20.glViewport(0,0,width,height);
+
         for (AFilter filter:mFilters){
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fFrame[0]);
             GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
@@ -77,7 +78,6 @@ public class GroupFilter extends AFilter{
             unBindFrame();
             textureIndex++;
         }
-
     }
 
     private void updateFilter(){

@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
+import com.example.cj.videoeditor.utils.MatrixUtils;
+
 /**
  * Created by qqche_000 on 2017/8/20.
  * 水印的Filter
@@ -52,7 +54,6 @@ public class WaterMarkFilter extends NoFilter{
         super.onCreate();
         mFilter.create();
         createTexture();
-
     }
     private int[] textures=new int[1];
     private void createTexture() {
@@ -70,7 +71,8 @@ public class WaterMarkFilter extends NoFilter{
             //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
             GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
-//            MatrixUtils.flip(mFilter.getMatrix(),false,true);
+            //对画面进行矩阵旋转
+            MatrixUtils.flip(mFilter.getMatrix(),false,true);
 
             mFilter.setTextureId(textures[0]);
         }
