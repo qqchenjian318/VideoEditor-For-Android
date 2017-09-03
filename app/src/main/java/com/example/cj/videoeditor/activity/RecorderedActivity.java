@@ -1,6 +1,8 @@
 package com.example.cj.videoeditor.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.cj.videoeditor.Constants;
@@ -33,6 +36,8 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
     private CameraView mCameraView;
     private CircularProgressView mCapture;
     private FocusImageView mFocus;
+    private ImageView mBeautyBtn;
+    private ImageView mFilterBtn;
     private static final int maxTime = 20000;//最长录制20s
     private boolean pausing = false;
     private boolean recordFlag = false;//是否正在录制
@@ -59,7 +64,10 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
         mCameraView = (CameraView) findViewById(R.id.camera_view);
         mCapture = (CircularProgressView) findViewById(R.id.mCapture);
         mFocus = (FocusImageView) findViewById(R.id.focusImageView);
+        mBeautyBtn = (ImageView) findViewById(R.id.btn_camera_beauty);
+        mFilterBtn = (ImageView) findViewById(R.id.btn_camera_filter);
 
+        mBeautyBtn.setOnClickListener(this);
         mCameraView.setOnTouchListener(this);
         mCapture.setTotal(maxTime);
         mCapture.setOnClickListener(this);
@@ -147,6 +155,18 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
                     mCameraView.resume(false);
                     pausing = false;
                 }
+                break;
+            case R.id.btn_camera_beauty:
+                new AlertDialog.Builder(RecorderedActivity.this)
+                        .setSingleChoiceItems(new String[]{"关闭", "1", "2", "3", "4", "5"}, mCameraView.getBeautyLevel(),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mCameraView.changeBeautyLevel(which);
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .setNegativeButton("取消", null)
+                        .show();
                 break;
         }
     }

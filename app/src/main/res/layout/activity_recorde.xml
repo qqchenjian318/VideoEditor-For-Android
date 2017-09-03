@@ -11,15 +11,35 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.example.cj.videoeditor.widget.CircularProgressView
-            android:id="@+id/mCapture"
-            android:background="@drawable/bt_capture"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            android:clickable="true" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/btn_camera_beauty"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:scaleType="center"
+                android:src="@drawable/btn_camera_beauty"/>
+            <com.example.cj.videoeditor.widget.CircularProgressView
+                android:id="@+id/mCapture"
+                android:background="@drawable/bt_capture"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:clickable="true" />
+            <ImageView
+                android:id="@+id/btn_camera_filter"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:scaleType="center"
+                android:src="@drawable/btn_camera_filter"/>
+        </LinearLayout>
+
         <com.example.cj.videoeditor.widget.FocusImageView
             android:id="@+id/focusImageView"
             android:layout_width="75dip"

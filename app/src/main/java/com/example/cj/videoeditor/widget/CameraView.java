@@ -106,6 +106,18 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
     public int getCameraId(){
         return cameraId;
     }
+    public int getBeautyLevel() {
+        return mCameraDrawer.getBeautyLevel();
+    }
+
+    public void changeBeautyLevel(final int level) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                mCameraDrawer.changeBeautyLevel(level);
+            }
+        });
+    }
     public void startRecord(){
         queueEvent(new Runnable() {
             @Override
@@ -153,4 +165,6 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         this.requestRender();
     }
+
+
 }

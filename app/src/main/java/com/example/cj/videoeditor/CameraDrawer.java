@@ -10,10 +10,13 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.example.cj.videoeditor.filter.AFilter;
+import com.example.cj.videoeditor.filter.EasyGlUtils;
 import com.example.cj.videoeditor.filter.GroupFilter;
 import com.example.cj.videoeditor.filter.NoFilter;
 import com.example.cj.videoeditor.filter.DrawFilter;
+import com.example.cj.videoeditor.filter.ProcessFilter;
 import com.example.cj.videoeditor.filter.WaterMarkFilter;
+import com.example.cj.videoeditor.gpufilter.filter.MagicBeautyFilter;
 import com.example.cj.videoeditor.record.video.TextureMovieEncoder;
 import com.example.cj.videoeditor.utils.MatrixUtils;
 
@@ -28,12 +31,18 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class CameraDrawer implements GLSurfaceView.Renderer {
 
+    private  float[] OM ;
     /**显示画面的filter*/
     private final AFilter showFilter;
     /**后台绘制的filter*/
     private final AFilter drawFilter;
     /**绘制水印的filter组*/
     private final GroupFilter mBeFilter;
+    private final GroupFilter mAfFilter;
+    /**用于绘制美白效果的filter*/
+    private AFilter mProcessFilter;
+    /**美白的filter*/
+    private MagicBeautyFilter mBeautyFilter;
 
     private SurfaceTexture mSurfaceTextrue;
     /**预览数据的宽高*/
@@ -63,9 +72,13 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         showFilter = new NoFilter(resources);
         drawFilter = new DrawFilter(resources);
 
-
+        mProcessFilter=new ProcessFilter(resources);
         mBeFilter = new GroupFilter(resources);
-
+        mAfFilter = new GroupFilter(resources);
+        mBeautyFilter = new MagicBeautyFilter();
+        //必须传入上下翻转的矩阵
+        OM= MatrixUtils.getOriginalMatrix();
+        MatrixUtils.flip(OM,false,true);//矩阵上下翻转
 
         WaterMarkFilter waterMarkFilter = new WaterMarkFilter(resources);
         waterMarkFilter.setWaterMark(BitmapFactory.decodeResource(resources,R.mipmap.watermark));
@@ -77,6 +90,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
 
     private void addFilter(AFilter filter) {
         /**抵消本身的颠倒操作*/
+//        filter.setMatrix(OM);
         mBeFilter.addFilter(filter);
     }
 
@@ -88,10 +102,12 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         drawFilter.create();
         drawFilter.setTextureId(textureID);
 
-
+        mProcessFilter.create();
         showFilter.create();
 //        showFilter.setTextureId(textureID);
         mBeFilter.create();
+        mAfFilter.create();
+        mBeautyFilter.init();
 
 
         if (recordingEnabled){
@@ -123,8 +139,12 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         useTexParameter();
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,0);
 
+        mProcessFilter.setSize(mPreviewWidth,mPreviewHeight);
         mBeFilter.setSize(mPreviewWidth,mPreviewHeight);
+        mAfFilter.setSize(mPreviewWidth,mPreviewHeight);
         drawFilter.setSize(mPreviewWidth,mPreviewHeight);
+        mBeautyFilter.onDisplaySizeChanged(mPreviewWidth,mPreviewHeight);
+        mBeautyFilter.onInputSizeChanged(mPreviewWidth,mPreviewHeight);
 
         MatrixUtils.getShowMatrix(SM,mPreviewWidth, mPreviewHeight, width, height);
         showFilter.setMatrix(SM);
@@ -135,16 +155,25 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         /**更新界面中的数据*/
         mSurfaceTextrue.updateTexImage();
 
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fFrame[0]);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
-                GLES20.GL_TEXTURE_2D, fTexture[0], 0);
+        EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
         GLES20.glViewport(0,0,mPreviewWidth,mPreviewHeight);
         drawFilter.draw();
-        //解绑
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER,0);
+        EasyGlUtils.unBindFrameBuffer();
 
         mBeFilter.setTextureId(fTexture[0]);
         mBeFilter.draw();
+        if (mBeautyFilter != null && mBeautyFilter.getBeautyLevel() != 0){
+            EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
+            GLES20.glViewport(0,0,mPreviewWidth,mPreviewHeight);
+            mBeautyFilter.onDrawFrame(mBeFilter.getOutputTexture());
+            EasyGlUtils.unBindFrameBuffer();
+            mProcessFilter.setTextureId(fTexture[0]);
+        }else {
+            mProcessFilter.setTextureId(mBeFilter.getOutputTexture());
+        }
+        mProcessFilter.draw();
+        mAfFilter.setTextureId(mBeFilter.getOutputTexture());
+        mAfFilter.draw();
 
 
         if (recordingEnabled){
@@ -199,10 +228,10 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         }
         /**绘制显示的filter*/
         GLES20.glViewport(0,0,width,height);
-        showFilter.setTextureId(mBeFilter.getOutputTexture());
+        showFilter.setTextureId(mAfFilter.getOutputTexture());
         showFilter.draw();
         if (videoEncoder != null && recordingEnabled && recordingStatus == RECORDING_ON){
-            videoEncoder.setTextureId(mBeFilter.getOutputTexture());
+            videoEncoder.setTextureId(mAfFilter.getOutputTexture());
             videoEncoder.frameAvailable(mSurfaceTextrue);
         }
     }
@@ -213,7 +242,13 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
             mPreviewHeight = height;
         }
     }
-
+    /**提供修改美白等级的接口*/
+    public void changeBeautyLevel(int level){
+        mBeautyFilter.setBeautyLevel(level);
+    }
+    public int getBeautyLevel(){
+        return mBeautyFilter.getBeautyLevel();
+    }
     /**根据摄像头设置纹理映射坐标*/
     public void setCameraId(int id) {
         drawFilter.setFlag(id);
