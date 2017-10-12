@@ -11,6 +11,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/btn_camera_switch"
+            android:src="@drawable/selector_rewardcamera"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"

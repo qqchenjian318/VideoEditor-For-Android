@@ -27,7 +27,6 @@ public class WaterMarkFilter extends NoFilter{
         mFilter=new NoFilter(mRes){
             @Override
             protected void onClear() {
-
             }
         };
     }

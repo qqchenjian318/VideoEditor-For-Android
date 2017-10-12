@@ -36,7 +36,7 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
 
     private int dataWidth=0,dataHeight=0;
 
-    private boolean isSetParm=false;
+    private boolean isSetParm = false;
 
     private int cameraId;
 
@@ -76,12 +76,16 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
         mCamera.setPreviewTexture(texture);
         mCamera.preview();
     }
+    public void switchCamera(){
+        cameraId = cameraId==0?1:0;
+        open(cameraId);
+    }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         mCameraDrawer.onSurfaceCreated(gl,config);
         if (!isSetParm){
-            open(0);
+            open(cameraId);
             stickerInit();
         }
         mCameraDrawer.setPreviewSize(dataWidth,dataHeight);
@@ -96,6 +100,17 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             mCameraDrawer.onDrawFrame(gl);
         }
     }
+    /**
+     * 每次Activity onResume时被调用,第一次不会打开相机
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isSetParm){
+            open(cameraId);
+        }
+    }
+
     /**
      * 摄像头聚焦
      * */

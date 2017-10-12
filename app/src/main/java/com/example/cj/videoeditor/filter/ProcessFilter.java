@@ -3,6 +3,9 @@ package com.example.cj.videoeditor.filter;
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
+import com.example.cj.videoeditor.utils.EasyGlUtils;
+import com.example.cj.videoeditor.utils.MatrixUtils;
+
 
 /**
  * draw并不执行父类的draw方法,所以矩阵对它无效
@@ -23,6 +26,9 @@ public class ProcessFilter extends AFilter {
     public ProcessFilter(Resources mRes) {
         super(mRes);
         mFilter=new NoFilter(mRes);
+        float[]  OM= MatrixUtils.getOriginalMatrix();
+        MatrixUtils.flip(OM,false,true);//矩阵上下翻转
+        mFilter.setMatrix(OM);
     }
 
     @Override
@@ -50,7 +56,6 @@ public class ProcessFilter extends AFilter {
         EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
         GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
             GLES20.GL_RENDERBUFFER, fRender[0]);
-//        AiyaCameraEffect.getInstance().process(getTextureId(),index);
         mFilter.setTextureId(getTextureId());
         mFilter.draw();
         EasyGlUtils.unBindFrameBuffer();

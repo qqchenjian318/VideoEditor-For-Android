@@ -1,4 +1,4 @@
-package com.example.cj.videoeditor.filter;
+package com.example.cj.videoeditor.utils;
 
 import android.opengl.GLES20;
 

@@ -7,10 +7,9 @@ import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import com.example.cj.videoeditor.filter.AFilter;
-import com.example.cj.videoeditor.filter.EasyGlUtils;
+import com.example.cj.videoeditor.utils.EasyGlUtils;
 import com.example.cj.videoeditor.filter.GroupFilter;
 import com.example.cj.videoeditor.filter.NoFilter;
 import com.example.cj.videoeditor.filter.DrawFilter;
@@ -172,7 +171,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
             mProcessFilter.setTextureId(mBeFilter.getOutputTexture());
         }
         mProcessFilter.draw();
-        mAfFilter.setTextureId(mBeFilter.getOutputTexture());
+        mAfFilter.setTextureId(mProcessFilter.getOutputTexture());
         mAfFilter.draw();
 
 

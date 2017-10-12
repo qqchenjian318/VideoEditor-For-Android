@@ -38,6 +38,7 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
     private FocusImageView mFocus;
     private ImageView mBeautyBtn;
     private ImageView mFilterBtn;
+    private ImageView mCameraChange;
     private static final int maxTime = 20000;//最长录制20s
     private boolean pausing = false;
     private boolean recordFlag = false;//是否正在录制
@@ -66,9 +67,11 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
         mFocus = (FocusImageView) findViewById(R.id.focusImageView);
         mBeautyBtn = (ImageView) findViewById(R.id.btn_camera_beauty);
         mFilterBtn = (ImageView) findViewById(R.id.btn_camera_filter);
+        mCameraChange = (ImageView) findViewById(R.id.btn_camera_switch);
 
         mBeautyBtn.setOnClickListener(this);
         mCameraView.setOnTouchListener(this);
+        mCameraChange.setOnClickListener(this);
         mCapture.setTotal(maxTime);
         mCapture.setOnClickListener(this);
     }
@@ -145,6 +148,16 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.btn_camera_switch:
+                mCameraView.switchCamera();
+                if (mCameraView.getCameraId() == 1){
+                    //前置摄像头 使用美颜
+                    mCameraView.changeBeautyLevel(3);
+                }else {
+                    //后置摄像头不使用美颜
+                    mCameraView.changeBeautyLevel(0);
+                }
+                break;
             case R.id.mCapture:
                 if (!recordFlag) {
                     executorService.execute(recordRunnable);
@@ -157,6 +170,10 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
                 }
                 break;
             case R.id.btn_camera_beauty:
+                if (mCameraView.getCameraId() == 0){
+                    Toast.makeText(this, "后置摄像头 不使用美白磨皮功能", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 new AlertDialog.Builder(RecorderedActivity.this)
                         .setSingleChoiceItems(new String[]{"关闭", "1", "2", "3", "4", "5"}, mCameraView.getBeautyLevel(),
                                 new DialogInterface.OnClickListener() {
