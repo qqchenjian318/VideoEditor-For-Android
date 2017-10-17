@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VideoEditor</string>
+    <string name="video">视频</string>
 </resources>

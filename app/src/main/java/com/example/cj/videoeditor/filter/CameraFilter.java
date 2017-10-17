@@ -6,9 +6,9 @@ import android.content.res.Resources;
 /**
  * Description:
  */
-public class DrawFilter extends OesFilter {
+public class CameraFilter extends OesFilter {
 
-    public DrawFilter(Resources mRes) {
+    public CameraFilter(Resources mRes) {
         super(mRes);
     }
 

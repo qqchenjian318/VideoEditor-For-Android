@@ -1,4 +1,4 @@
-package com.example.cj.videoeditor;
+package com.example.cj.videoeditor.drawer;
 
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
@@ -8,11 +8,12 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
+import com.example.cj.videoeditor.R;
 import com.example.cj.videoeditor.filter.AFilter;
 import com.example.cj.videoeditor.utils.EasyGlUtils;
 import com.example.cj.videoeditor.filter.GroupFilter;
 import com.example.cj.videoeditor.filter.NoFilter;
-import com.example.cj.videoeditor.filter.DrawFilter;
+import com.example.cj.videoeditor.filter.CameraFilter;
 import com.example.cj.videoeditor.filter.ProcessFilter;
 import com.example.cj.videoeditor.filter.WaterMarkFilter;
 import com.example.cj.videoeditor.gpufilter.filter.MagicBeautyFilter;
@@ -69,7 +70,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     public CameraDrawer(Resources resources){
         //初始化一个滤镜 也可以叫控制器
         showFilter = new NoFilter(resources);
-        drawFilter = new DrawFilter(resources);
+        drawFilter = new CameraFilter(resources);
 
         mProcessFilter=new ProcessFilter(resources);
         mBeFilter = new GroupFilter(resources);
@@ -187,24 +188,24 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
                             null));
                     recordingStatus = RECORDING_ON;
                     break;
-                case RECORDING_ON:
-                case RECORDING_PAUSE:
-                    break;
                 case RECORDING_RESUMED:
                     videoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
                     videoEncoder.resumeRecording();
                     recordingStatus = RECORDING_ON;
+                    break;
+                case RECORDING_ON:
+                case RECORDING_PAUSED:
+                    break;
+                case RECORDING_PAUSE:
+                    videoEncoder.pauseRecording();
+                    recordingStatus = RECORDING_PAUSED;
                     break;
 
                 case RECORDING_RESUME:
                     videoEncoder.resumeRecording();
                     recordingStatus=RECORDING_ON;
                     break;
-                case RECORDING_PAUSED:
-                    videoEncoder.pauseRecording();
-                    recordingStatus=RECORDING_PAUSED;
 
-                    break;
                 default:
                     throw new RuntimeException("unknown recording status "+recordingStatus);
             }
