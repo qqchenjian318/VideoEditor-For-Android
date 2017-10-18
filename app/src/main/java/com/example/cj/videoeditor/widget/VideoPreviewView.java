@@ -35,22 +35,22 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
 
     public VideoPreviewView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         setPreserveEGLContextOnPause(false);
         setCameraDistance(100);
-        mDrawer = new VideoDrawer(getResources());
+        mDrawer = new VideoDrawer(context,getResources());
 
         //初始化Drawer和VideoPlayer
-        mMediaPlayer=new MediaPlayerWrapper();
+        mMediaPlayer = new MediaPlayerWrapper();
         mMediaPlayer.setOnCompletionListener(this);
     }
-
+    /**设置视频的播放地址*/
     public void setVideoPath(List<String> paths){
         mMediaPlayer.setDataSource(paths);
     }
@@ -154,6 +154,20 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
     public void seekTo(int time){
         mMediaPlayer.seekTo(time);
     }
+    /**
+     * 获取当前视频的长度
+     * */
+    public int getVideoDuration(){
+        return mMediaPlayer.getCurVideoDuration();
+    }
+
+    /**
+     * 切换美颜状态
+     * */
+    public void switchBeauty(){
+        mDrawer.switchBeauty();
+    }
+
 
     public void setIMediaCallback(MediaPlayerWrapper.IMediaCallback callback){
         this.callback=callback;

@@ -14,6 +14,14 @@ import com.example.cj.videoeditor.widget.LoadingDialog;
 public class BaseActivity extends Activity{
     public LoadingDialog loading;
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (loading != null){
+            loading.dismiss();
+        }
+    }
+
     /**
      * 修改加载提示信息
      *
@@ -108,6 +116,6 @@ public class BaseActivity extends Activity{
         }
     }
     public boolean isLoading(){
-        return loading.isShowing();
+        return loading != null && loading.isShowing();
     }
 }

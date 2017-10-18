@@ -19,10 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RecorderedActivity"
+        <activity android:name=".activity.RecordedActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.VideoSelectActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".activity.BaseActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".activity.PreviewActivity"
+                  android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 package com.example.cj.videoeditor.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Point;
@@ -21,7 +20,6 @@ import com.example.cj.videoeditor.widget.CameraView;
 import com.example.cj.videoeditor.widget.CircularProgressView;
 import com.example.cj.videoeditor.widget.FocusImageView;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,7 +29,7 @@ import java.util.concurrent.Executors;
  * 主要包括 音视频录制、断点续录、对焦等功能
  */
 
-public class RecorderedActivity extends Activity implements View.OnClickListener, View.OnTouchListener, SensorControler.CameraFocusListener {
+public class RecordedActivity extends BaseActivity implements View.OnClickListener, View.OnTouchListener, SensorControler.CameraFocusListener {
 
     private CameraView mCameraView;
     private CircularProgressView mCapture;
@@ -174,7 +172,7 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
                     Toast.makeText(this, "后置摄像头 不使用美白磨皮功能", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                new AlertDialog.Builder(RecorderedActivity.this)
+                new AlertDialog.Builder(RecordedActivity.this)
                         .setSingleChoiceItems(new String[]{"关闭", "1", "2", "3", "4", "5"}, mCameraView.getBeautyLevel(),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -214,7 +212,7 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(RecorderedActivity.this, "录像时间太短", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RecordedActivity.this, "录像时间太短", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
@@ -231,7 +229,7 @@ public class RecorderedActivity extends Activity implements View.OnClickListener
             @Override
             public void run() {
                 mCapture.setProcess(0);
-                Toast.makeText(RecorderedActivity.this, "文件保存路径：" + path, Toast.LENGTH_SHORT).show();
+                Toast.makeText(RecordedActivity.this, "文件保存路径：" + path, Toast.LENGTH_SHORT).show();
             }
         });
     }

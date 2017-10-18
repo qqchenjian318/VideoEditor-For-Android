@@ -16,5 +16,13 @@
         android:id="@+id/record_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="录制" />
+        android:layout_gravity="center_horizontal"
+        android:text="@string/record" />
+    <Button
+        android:id="@+id/select_activity"
+        android:text="@string/local_video_beauty"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

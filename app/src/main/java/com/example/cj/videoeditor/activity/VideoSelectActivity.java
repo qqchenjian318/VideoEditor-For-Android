@@ -1,6 +1,5 @@
 package com.example.cj.videoeditor.activity;
 
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -28,7 +28,7 @@ import java.io.IOException;
  * desc: local video select activity
  */
 
-public class VideoSelectActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>,VideoAdapter.OnVideoSelectListener {
+public class VideoSelectActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,VideoAdapter.OnVideoSelectListener {
     ImageView ivClose;
     GridView gridview;
     public static final String PROJECT_VIDEO = MediaStore.MediaColumns._ID;
@@ -135,5 +135,10 @@ public class VideoSelectActivity extends Activity implements LoaderManager.Loade
             return;
         }
         //跳转预览界面 TODO
+        if(!TextUtils.isEmpty(path)){
+            Intent intent=new Intent(this,PreviewActivity.class);
+            intent.putExtra("path",path);
+            startActivity(intent);
+        }
     }
 }

@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.view.Surface;
 
 import java.io.IOException;
+import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +103,9 @@ public class MediaPlayerWrapper implements MediaPlayer.OnCompletionListener, Med
             mCallback.onVideoPause();
         }
     }
-
+    public int getCurVideoDuration(){
+        return mInfoList.get(curIndex).duration;
+    }
 
     public int getVideoDuration() {
         if (mSrcList.size() == 0) {

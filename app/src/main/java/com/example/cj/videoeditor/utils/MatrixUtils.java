@@ -21,7 +21,6 @@ public enum MatrixUtils {
     /**
      * use {@link #getMatrix} instead
      */
-    @Deprecated
     public static void getShowMatrix(float[] matrix,int imgWidth,int imgHeight,int viewWidth,int
         viewHeight){
         if(imgHeight>0&&imgWidth>0&&viewWidth>0&&viewHeight>0){

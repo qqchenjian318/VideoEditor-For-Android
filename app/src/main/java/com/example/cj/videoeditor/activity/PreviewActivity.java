@@ -8,13 +8,18 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.cj.videoeditor.Constants;
 import com.example.cj.videoeditor.R;
+import com.example.cj.videoeditor.gpufilter.filter.MagicAntiqueFilter;
+import com.example.cj.videoeditor.gpufilter.filter.MagicBeautyFilter;
 import com.example.cj.videoeditor.media.MediaPlayerWrapper;
 import com.example.cj.videoeditor.media.VideoInfo;
+import com.example.cj.videoeditor.mediacodec.VideoClipper;
 import com.example.cj.videoeditor.widget.VideoPreviewView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
@@ -25,9 +30,7 @@ import java.util.concurrent.Executors;
 
 public class PreviewActivity extends BaseActivity implements View.OnClickListener, MediaPlayerWrapper.IMediaCallback {
 
-    private ImageView mBack;
-    private ImageView mConfirm;
-    private ImageView mClose;
+
     private VideoPreviewView mVideoView;
     private String mPath;
     private boolean resumed;
@@ -63,13 +66,16 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                     isPlaying = false;
                     break;
                 case VIDEO_CUT_FINISH:
+                    Toast.makeText(PreviewActivity.this, "视频保存地址   "+outputPath, Toast.LENGTH_SHORT).show();
                     endLoading();
+                    finish();
                     //TODO　已经渲染完毕了　
 
                     break;
             }
         }
     };
+    private ImageView mBeauty;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,12 +87,14 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
 
     private void initView() {
         mVideoView = (VideoPreviewView) findViewById(R.id.videoView);
-        mBack = (ImageView) findViewById(R.id.iv_back);
-        mConfirm = (ImageView) findViewById(R.id.iv_confirm);
-        mClose = (ImageView) findViewById(R.id.iv_close);
-        mBack.setOnClickListener(this);
-        mConfirm.setOnClickListener(this);
-        mClose.setOnClickListener(this);
+        ImageView back = (ImageView) findViewById(R.id.iv_back);
+        ImageView confirm = (ImageView) findViewById(R.id.iv_confirm);
+        ImageView close = (ImageView) findViewById(R.id.iv_close);
+        mBeauty = (ImageView) findViewById(R.id.iv_beauty);
+        back.setOnClickListener(this);
+        confirm.setOnClickListener(this);
+        close.setOnClickListener(this);
+        mBeauty.setOnClickListener(this);
         setLoadingCancelable(false);
 
     }
@@ -111,12 +119,14 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onPause() {
         super.onPause();
+
         mVideoView.pause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
         isDestroy = true;
         mVideoView.onDestroy();
     }
@@ -133,16 +143,44 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
         switch (v.getId()){
             case R.id.iv_back:
             case R.id.iv_close:
+                if (isLoading()){
+                    endLoading();
+                }
                 finish();
+                break;
+            case R.id.iv_beauty:
+                mVideoView.switchBeauty();
+                if (mBeauty.isSelected()){
+                    mBeauty.setSelected(false);
+                }else {
+                    mBeauty.setSelected(true);
+                }
                 break;
             case R.id.iv_confirm:
                 if (isLoading()){
                     return;
                 }
                 mVideoView.pause();
-                showLoading("视频处理中");
+                showLoading("视频处理中",false);
 
+                VideoClipper clipper = new VideoClipper();
+                if (mBeauty.isSelected()){
+                    clipper.showBeauty();
+                }
+                clipper.setInputVideoPath(mPath);
                 outputPath = Constants.getPath("video/clip/", System.currentTimeMillis() + "");
+                clipper.setOutputVideoPath(outputPath);
+                clipper.setOnVideoCutFinishListener(new VideoClipper.OnVideoCutFinishListener() {
+                    @Override
+                    public void onFinish() {
+                        mHandler.sendEmptyMessage(VIDEO_CUT_FINISH);
+                    }
+                });
+                try {
+                    clipper.clipVideo(0,mVideoView.getVideoDuration()*1000);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
 
                 break;
