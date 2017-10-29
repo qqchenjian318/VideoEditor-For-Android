@@ -114,6 +114,9 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
     public int getBeautyLevel() {
         return mCameraDrawer.getBeautyLevel();
     }
+    public void changeFilter(){
+        mCameraDrawer.changeFilter();
+    }
 
     public void changeBeautyLevel(final int level) {
         queueEvent(new Runnable() {

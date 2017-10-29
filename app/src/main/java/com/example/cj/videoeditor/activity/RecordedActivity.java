@@ -168,6 +168,8 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
             case R.id.btn_camera_beauty:
+                mCameraView.changeFilter();
+
                 if (mCameraView.getCameraId() == 0){
                     Toast.makeText(this, "后置摄像头 不使用美白磨皮功能", Toast.LENGTH_SHORT).show();
                     return;

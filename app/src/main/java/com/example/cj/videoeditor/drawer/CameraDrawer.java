@@ -10,6 +10,7 @@ import android.opengl.GLSurfaceView;
 
 import com.example.cj.videoeditor.R;
 import com.example.cj.videoeditor.filter.AFilter;
+import com.example.cj.videoeditor.gpufilter.filter.MagicAntiqueFilter;
 import com.example.cj.videoeditor.utils.EasyGlUtils;
 import com.example.cj.videoeditor.filter.GroupFilter;
 import com.example.cj.videoeditor.filter.NoFilter;
@@ -42,7 +43,8 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     /**用于绘制美白效果的filter*/
     private AFilter mProcessFilter;
     /**美白的filter*/
-    private MagicBeautyFilter mBeautyFilter;
+//    private MagicBeautyFilter mBeautyFilter;
+    private MagicAntiqueFilter mBeautyFilter;
 
     private SurfaceTexture mSurfaceTextrue;
     /**预览数据的宽高*/
@@ -75,7 +77,8 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         mProcessFilter=new ProcessFilter(resources);
         mBeFilter = new GroupFilter(resources);
         mAfFilter = new GroupFilter(resources);
-        mBeautyFilter = new MagicBeautyFilter();
+//        mBeautyFilter = new MagicBeautyFilter();
+        mBeautyFilter = new MagicAntiqueFilter();
         //必须传入上下翻转的矩阵
         OM= MatrixUtils.getOriginalMatrix();
         MatrixUtils.flip(OM,false,true);//矩阵上下翻转
@@ -162,7 +165,8 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
 
         mBeFilter.setTextureId(fTexture[0]);
         mBeFilter.draw();
-        if (mBeautyFilter != null && mBeautyFilter.getBeautyLevel() != 0){
+//        if (mBeautyFilter != null && mBeautyFilter.getBeautyLevel() != 0){
+        if (mBeautyFilter != null && isOpen){
             EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
             GLES20.glViewport(0,0,mPreviewWidth,mPreviewHeight);
             mBeautyFilter.onDrawFrame(mBeFilter.getOutputTexture());
@@ -244,10 +248,15 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     }
     /**提供修改美白等级的接口*/
     public void changeBeautyLevel(int level){
-        mBeautyFilter.setBeautyLevel(level);
+//        mBeautyFilter.setBeautyLevel(level);
+    }
+    private boolean isOpen = true;
+    public void changeFilter(){
+        isOpen = !isOpen;
     }
     public int getBeautyLevel(){
-        return mBeautyFilter.getBeautyLevel();
+//        return mBeautyFilter.getBeautyLevel();
+        return 3;
     }
     /**根据摄像头设置纹理映射坐标*/
     public void setCameraId(int id) {
