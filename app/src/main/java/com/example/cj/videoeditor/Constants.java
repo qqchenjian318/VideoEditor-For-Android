@@ -1,12 +1,15 @@
 package com.example.cj.videoeditor;
 
+import android.content.Context;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 
 
 import java.io.File;
 
 /**
- * Created by Administrator on 2017/6/26 0026.
+ * Created by cj on 2017/6/26 .
+ *
  */
 
 public class Constants {

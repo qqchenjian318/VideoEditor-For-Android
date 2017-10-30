@@ -8,8 +8,10 @@ import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 import android.os.Build;
+import android.util.Log;
 
 import com.example.cj.videoeditor.gpufilter.basefilter.GPUImageFilter;
+import com.example.cj.videoeditor.gpufilter.helper.MagicFilterFactory;
 import com.example.cj.videoeditor.gpufilter.helper.MagicFilterType;
 import com.example.cj.videoeditor.media.VideoInfo;
 
@@ -98,6 +100,14 @@ public class VideoClipper {
         }
         mFilter = filter;
     }
+    public void setFilterType(MagicFilterType type) {
+        if (type == null || type == MagicFilterType.NONE) {
+            mFilter = null;
+            return;
+        }
+        mFilter = MagicFilterFactory.initFilters(type);
+    }
+
     /**
      * 开启美颜
      * */
@@ -353,6 +363,11 @@ public class VideoClipper {
         info.rotation = videoRotation;
         outputSurface = new OutputSurface(info);
         outputSurface.isBeauty(isOpenBeauty);
+
+        if (mFilter != null) {
+            Log.e("hero","---gpuFilter 不为null哟----设置进outputSurface里面");
+            outputSurface.addGpuFilter(mFilter);
+        }
 
         videoDecoder.configure(videoFormat, outputSurface.getSurface(), null, 0);
         videoDecoder.start();//解码器启动

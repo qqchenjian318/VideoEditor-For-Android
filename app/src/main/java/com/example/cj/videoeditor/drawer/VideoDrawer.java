@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
-import android.media.MediaPlayer;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
-
+import android.view.MotionEvent;
 
 import com.example.cj.videoeditor.R;
 import com.example.cj.videoeditor.filter.AFilter;
@@ -18,9 +16,10 @@ import com.example.cj.videoeditor.filter.NoFilter;
 import com.example.cj.videoeditor.filter.ProcessFilter;
 import com.example.cj.videoeditor.filter.RotationOESFilter;
 import com.example.cj.videoeditor.filter.WaterMarkFilter;
+import com.example.cj.videoeditor.gpufilter.SlideGpuFilterGroup;
+import com.example.cj.videoeditor.gpufilter.basefilter.GPUImageFilter;
 import com.example.cj.videoeditor.gpufilter.filter.MagicBeautyFilter;
 import com.example.cj.videoeditor.media.VideoInfo;
-import com.example.cj.videoeditor.utils.DensityUtils;
 import com.example.cj.videoeditor.utils.EasyGlUtils;
 import com.example.cj.videoeditor.utils.MatrixUtils;
 
@@ -47,6 +46,11 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
     private AFilter mProcessFilter;
     /**绘制水印的滤镜*/
     private final GroupFilter mBeFilter;
+    /**多种滤镜切换*/
+    private SlideGpuFilterGroup mSlideFilterGroup;
+
+    /**绘制其他样式的滤镜*/
+    private GPUImageFilter mGroupFilter;
     /**控件的长宽*/
     private int viewWidth;
     private int viewHeight;
@@ -68,6 +72,7 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
 
         mProcessFilter=new ProcessFilter(res);
 
+        mSlideFilterGroup = new SlideGpuFilterGroup();
         OM = MatrixUtils.getOriginalMatrix();
         MatrixUtils.flip(OM,false,true);//矩阵上下翻转
 //        mShow.setMatrix(OM);
@@ -98,6 +103,7 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
         mShow.create();
         mBeautyFilter.init();
         mBeautyFilter.setBeautyLevel(3);//默认设置3级的美颜
+        mSlideFilterGroup.init();
     }
     public void onVideoChanged(VideoInfo info){
         setRotation(info.rotation);
@@ -123,7 +129,7 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
         mProcessFilter.setSize(viewWidth,viewHeight);
         mBeautyFilter.onDisplaySizeChanged(viewWidth,viewHeight);
         mBeautyFilter.onInputSizeChanged(viewWidth,viewHeight);
-
+        mSlideFilterGroup.onSizeChanged(viewWidth,viewHeight);
     }
 
     @Override
@@ -148,7 +154,20 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
         }
         mProcessFilter.draw();
 
+        mSlideFilterGroup.onDrawFrame(mProcessFilter.getOutputTexture());
+        if (mGroupFilter != null){
+            EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
+            GLES20.glViewport(0,0,viewWidth,viewHeight);
+            mGroupFilter.onDrawFrame(mSlideFilterGroup.getOutputTexture());
+            EasyGlUtils.unBindFrameBuffer();
+            mProcessFilter.setTextureId(fTexture[0]);
+        }else {
+            mProcessFilter.setTextureId(mSlideFilterGroup.getOutputTexture());
+        }
+        mProcessFilter.draw();
+
         GLES20.glViewport(0,0,viewWidth,viewHeight);
+
         mShow.setTextureId(mProcessFilter.getOutputTexture());
         mShow.draw();
     }
@@ -172,11 +191,33 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
     public void isOpenBeauty(boolean isBeauty){
         this.isBeauty = isBeauty;
     }
+    /**
+     * 触摸事件监听
+     * */
+    public void onTouch(MotionEvent event){
+        mSlideFilterGroup.onTouchEvent(event);
+    }
+    /**
+     * 滤镜切换的监听
+     * */
+    public void setOnFilterChangeListener(SlideGpuFilterGroup.OnFilterChangeListener listener){
+        mSlideFilterGroup.setOnFilterChangeListener(listener);
+    }
 
     public void checkGlError(String s) {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             throw new RuntimeException(s + ": glError " + error);
         }
+    }
+
+    public void setGpuFilter(GPUImageFilter filter) {
+        if (filter != null){
+            mGroupFilter = filter;
+            mGroupFilter.init();
+            mGroupFilter.onDisplaySizeChanged(viewWidth, viewWidth);
+            mGroupFilter.onInputSizeChanged(viewWidth,viewHeight);
+        }
+
     }
 }

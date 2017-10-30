@@ -7,10 +7,11 @@ import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.view.MotionEvent;
 
 import com.example.cj.videoeditor.R;
 import com.example.cj.videoeditor.filter.AFilter;
-import com.example.cj.videoeditor.gpufilter.filter.MagicAntiqueFilter;
+import com.example.cj.videoeditor.gpufilter.SlideGpuFilterGroup;
 import com.example.cj.videoeditor.utils.EasyGlUtils;
 import com.example.cj.videoeditor.filter.GroupFilter;
 import com.example.cj.videoeditor.filter.NoFilter;
@@ -43,8 +44,10 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     /**用于绘制美白效果的filter*/
     private AFilter mProcessFilter;
     /**美白的filter*/
-//    private MagicBeautyFilter mBeautyFilter;
-    private MagicAntiqueFilter mBeautyFilter;
+    private MagicBeautyFilter mBeautyFilter;
+//    private MagicAntiqueFilter mBeautyFilter;
+    /**多种滤镜切换*/
+    private SlideGpuFilterGroup mSlideFilterGroup;
 
     private SurfaceTexture mSurfaceTextrue;
     /**预览数据的宽高*/
@@ -77,8 +80,11 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         mProcessFilter=new ProcessFilter(resources);
         mBeFilter = new GroupFilter(resources);
         mAfFilter = new GroupFilter(resources);
-//        mBeautyFilter = new MagicBeautyFilter();
-        mBeautyFilter = new MagicAntiqueFilter();
+        mBeautyFilter = new MagicBeautyFilter();
+//        mBeautyFilter = new MagicAntiqueFilter();
+        mSlideFilterGroup = new SlideGpuFilterGroup();
+
+
         //必须传入上下翻转的矩阵
         OM= MatrixUtils.getOriginalMatrix();
         MatrixUtils.flip(OM,false,true);//矩阵上下翻转
@@ -111,6 +117,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         mBeFilter.create();
         mAfFilter.create();
         mBeautyFilter.init();
+        mSlideFilterGroup.init();
 
 
         if (recordingEnabled){
@@ -148,6 +155,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         drawFilter.setSize(mPreviewWidth,mPreviewHeight);
         mBeautyFilter.onDisplaySizeChanged(mPreviewWidth,mPreviewHeight);
         mBeautyFilter.onInputSizeChanged(mPreviewWidth,mPreviewHeight);
+        mSlideFilterGroup.onSizeChanged(mPreviewWidth,mPreviewHeight);
 
         MatrixUtils.getShowMatrix(SM,mPreviewWidth, mPreviewHeight, width, height);
         showFilter.setMatrix(SM);
@@ -165,8 +173,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
 
         mBeFilter.setTextureId(fTexture[0]);
         mBeFilter.draw();
-//        if (mBeautyFilter != null && mBeautyFilter.getBeautyLevel() != 0){
-        if (mBeautyFilter != null && isOpen){
+        if (mBeautyFilter != null && mBeautyFilter.getBeautyLevel() != 0){
             EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
             GLES20.glViewport(0,0,mPreviewWidth,mPreviewHeight);
             mBeautyFilter.onDrawFrame(mBeFilter.getOutputTexture());
@@ -176,7 +183,10 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
             mProcessFilter.setTextureId(mBeFilter.getOutputTexture());
         }
         mProcessFilter.draw();
-        mAfFilter.setTextureId(mProcessFilter.getOutputTexture());
+
+        mSlideFilterGroup.onDrawFrame(mProcessFilter.getOutputTexture());
+
+        mAfFilter.setTextureId(mSlideFilterGroup.getOutputTexture());
         mAfFilter.draw();
 
 
@@ -239,6 +249,19 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
             videoEncoder.frameAvailable(mSurfaceTextrue);
         }
     }
+    /**
+     * 触摸事件的传递
+     * */
+    public void onTouch(MotionEvent event){
+        mSlideFilterGroup.onTouchEvent(event);
+    }
+    /**
+     * 滤镜切换的事件监听
+     * */
+    public void setOnFilterChangeListener(SlideGpuFilterGroup.OnFilterChangeListener listener){
+        mSlideFilterGroup.setOnFilterChangeListener(listener);
+    }
+
     /**设置预览效果的size*/
     public void setPreviewSize(int width,int height){
         if (mPreviewWidth != width || mPreviewHeight != height){
@@ -248,15 +271,10 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     }
     /**提供修改美白等级的接口*/
     public void changeBeautyLevel(int level){
-//        mBeautyFilter.setBeautyLevel(level);
-    }
-    private boolean isOpen = true;
-    public void changeFilter(){
-        isOpen = !isOpen;
+        mBeautyFilter.setBeautyLevel(level);
     }
     public int getBeautyLevel(){
-//        return mBeautyFilter.getBeautyLevel();
-        return 3;
+        return mBeautyFilter.getBeautyLevel();
     }
     /**根据摄像头设置纹理映射坐标*/
     public void setCameraId(int id) {

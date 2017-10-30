@@ -16,6 +16,8 @@ import com.example.cj.videoeditor.Constants;
 import com.example.cj.videoeditor.MyApplication;
 import com.example.cj.videoeditor.R;
 import com.example.cj.videoeditor.camera.SensorControler;
+import com.example.cj.videoeditor.gpufilter.SlideGpuFilterGroup;
+import com.example.cj.videoeditor.gpufilter.helper.MagicFilterType;
 import com.example.cj.videoeditor.widget.CameraView;
 import com.example.cj.videoeditor.widget.CircularProgressView;
 import com.example.cj.videoeditor.widget.FocusImageView;
@@ -29,7 +31,7 @@ import java.util.concurrent.Executors;
  * 主要包括 音视频录制、断点续录、对焦等功能
  */
 
-public class RecordedActivity extends BaseActivity implements View.OnClickListener, View.OnTouchListener, SensorControler.CameraFocusListener {
+public class RecordedActivity extends BaseActivity implements View.OnClickListener, View.OnTouchListener, SensorControler.CameraFocusListener, SlideGpuFilterGroup.OnFilterChangeListener {
 
     private CameraView mCameraView;
     private CircularProgressView mCapture;
@@ -67,14 +69,17 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
         mFilterBtn = (ImageView) findViewById(R.id.btn_camera_filter);
         mCameraChange = (ImageView) findViewById(R.id.btn_camera_switch);
 
+
         mBeautyBtn.setOnClickListener(this);
         mCameraView.setOnTouchListener(this);
+        mCameraView.setOnFilterChangeListener(this);
         mCameraChange.setOnClickListener(this);
         mCapture.setTotal(maxTime);
         mCapture.setOnClickListener(this);
     }
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        mCameraView.onTouch(event);
         if (mCameraView.getCameraId() == 1) {
             return false;
         }
@@ -128,6 +133,7 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
     protected void onResume() {
         super.onResume();
         mCameraView.onResume();
+        Toast.makeText(this,R.string.change_filter,Toast.LENGTH_SHORT).show();
         if (recordFlag && autoPausing) {
             mCameraView.resume(true);
             autoPausing = false;
@@ -141,6 +147,20 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
             autoPausing = true;
         }
         mCameraView.onPause();
+    }
+    @Override
+    public void onFilterChange(final MagicFilterType type) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (type == MagicFilterType.NONE){
+                    Toast.makeText(RecordedActivity.this,"当前没有设置滤镜--"+type,Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(RecordedActivity.this,"当前滤镜切换为--"+type,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -168,7 +188,6 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
             case R.id.btn_camera_beauty:
-                mCameraView.changeFilter();
 
                 if (mCameraView.getCameraId() == 0){
                     Toast.makeText(this, "后置摄像头 不使用美白磨皮功能", Toast.LENGTH_SHORT).show();

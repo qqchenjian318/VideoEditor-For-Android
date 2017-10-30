@@ -297,7 +297,7 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         }
     }
     public void addGpuFilter(GPUImageFilter filter){
-//        mTextureRender.addGpuFilter(filter);
+        mDrawer.setGpuFilter(filter);
     }
     public void isBeauty(boolean isBeauty){
         mDrawer.isOpenBeauty(isBeauty);

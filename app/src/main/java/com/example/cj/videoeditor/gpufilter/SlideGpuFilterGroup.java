@@ -14,10 +14,10 @@ import com.example.cj.videoeditor.utils.EasyGlUtils;
 
 /**
  * Created by cj on 2017/7/20 0020.
- *
+ * 滑动切换滤镜的控制类
  */
 
-public class SlideGpufilterGroup {
+public class SlideGpuFilterGroup {
     private MagicFilterType[] types = new MagicFilterType[]{
             MagicFilterType.NONE,
             MagicFilterType.WARM,
@@ -41,18 +41,18 @@ public class SlideGpufilterGroup {
     private Scroller scroller;
     private OnFilterChangeListener mListener;
 
-    public SlideGpufilterGroup() {
+    public SlideGpuFilterGroup() {
         initFilter();
         scroller = new Scroller(MyApplication.getContext());
     }
 
-    public void initFilter() {
+    private void initFilter() {
         curFilter = getFilter(getCurIndex());
         leftFilter = getFilter(getLeftIndex());
         rightFilter = getFilter(getRightIndex());
     }
 
-    public GPUImageFilter getFilter(int index) {
+    private GPUImageFilter getFilter(int index) {
         GPUImageFilter filter = MagicFilterFactory.initFilters(types[index]);
         if (filter == null) {
             filter = new GPUImageFilter();
@@ -264,11 +264,11 @@ public class SlideGpufilterGroup {
                 }
                 locked = true;
                 downX = -1;
-                if (offset > Constants.screenWidth / 3) {
-                    scroller.startScroll(offset, 0, Constants.screenWidth - offset, 0, 100 * (1 - offset / Constants.screenWidth));
+                if (offset > MyApplication.screenWidth / 3) {
+                    scroller.startScroll(offset, 0, MyApplication.screenWidth - offset, 0, 100 * (1 - offset / MyApplication.screenWidth));
                     needSwitch = true;
                 } else {
-                    scroller.startScroll(offset, 0, -offset, 0, 100 * (offset / Constants.screenWidth));
+                    scroller.startScroll(offset, 0, -offset, 0, 100 * (offset / MyApplication.screenWidth));
                     needSwitch = false;
                 }
                 break;

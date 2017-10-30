@@ -3,4 +3,5 @@
     <string name="video">视频</string>
     <string name="record">录制</string>
     <string name="local_video_beauty">本地视频美颜</string>
+    <string name="change_filter">左右滑动切换滤镜哟...</string>
 </resources>

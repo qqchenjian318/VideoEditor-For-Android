@@ -5,9 +5,11 @@ import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.Surface;
 
 import com.example.cj.videoeditor.drawer.VideoDrawer;
+import com.example.cj.videoeditor.gpufilter.SlideGpuFilterGroup;
 import com.example.cj.videoeditor.media.MediaPlayerWrapper;
 import com.example.cj.videoeditor.media.VideoInfo;
 
@@ -89,7 +91,17 @@ public class VideoPreviewView extends GLSurfaceView implements GLSurfaceView.Ren
         }
         mMediaPlayer.release();
     }
-
+    public void onTouch(final MotionEvent event){
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                mDrawer.onTouch(event);
+            }
+        });
+    }
+    public void setOnFilterChangeListener(SlideGpuFilterGroup.OnFilterChangeListener listener){
+        mDrawer.setOnFilterChangeListener(listener);
+    }
     @Override
     public void onVideoPrepare() {
         if (callback!= null){

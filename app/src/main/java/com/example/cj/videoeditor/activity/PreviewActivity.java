@@ -6,14 +6,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.cj.videoeditor.Constants;
 import com.example.cj.videoeditor.R;
+import com.example.cj.videoeditor.gpufilter.SlideGpuFilterGroup;
 import com.example.cj.videoeditor.gpufilter.filter.MagicAntiqueFilter;
 import com.example.cj.videoeditor.gpufilter.filter.MagicBeautyFilter;
+import com.example.cj.videoeditor.gpufilter.helper.MagicFilterType;
 import com.example.cj.videoeditor.media.MediaPlayerWrapper;
 import com.example.cj.videoeditor.media.VideoInfo;
 import com.example.cj.videoeditor.mediacodec.VideoClipper;
@@ -28,7 +31,7 @@ import java.util.concurrent.Executors;
  * desc: 循环播放选择的视频的页面，可以对视频设置水印和美白效果
  */
 
-public class PreviewActivity extends BaseActivity implements View.OnClickListener, MediaPlayerWrapper.IMediaCallback {
+public class PreviewActivity extends BaseActivity implements View.OnClickListener, MediaPlayerWrapper.IMediaCallback, SlideGpuFilterGroup.OnFilterChangeListener, View.OnTouchListener {
 
 
     private VideoPreviewView mVideoView;
@@ -76,6 +79,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
         }
     };
     private ImageView mBeauty;
+    private MagicFilterType filterType = MagicFilterType.NONE;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,10 +95,13 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
         ImageView confirm = (ImageView) findViewById(R.id.iv_confirm);
         ImageView close = (ImageView) findViewById(R.id.iv_close);
         mBeauty = (ImageView) findViewById(R.id.iv_beauty);
+
         back.setOnClickListener(this);
         confirm.setOnClickListener(this);
         close.setOnClickListener(this);
         mBeauty.setOnClickListener(this);
+        mVideoView.setOnFilterChangeListener(this);
+        mVideoView.setOnTouchListener(this);
         setLoadingCancelable(false);
 
     }
@@ -110,6 +117,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onResume() {
         super.onResume();
+        Toast.makeText(this,R.string.change_filter,Toast.LENGTH_SHORT).show();
         if (resumed) {
             mVideoView.start();
         }
@@ -169,6 +177,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                 }
                 clipper.setInputVideoPath(mPath);
                 outputPath = Constants.getPath("video/clip/", System.currentTimeMillis() + "");
+                clipper.setFilterType(filterType);
                 clipper.setOutputVideoPath(outputPath);
                 clipper.setOnVideoCutFinishListener(new VideoClipper.OnVideoCutFinishListener() {
                     @Override
@@ -234,4 +243,21 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
             }
         }
     };
+
+    @Override
+    public void onFilterChange(final MagicFilterType type) {
+        this.filterType = type;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(PreviewActivity.this,"滤镜切换为---"+type,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        mVideoView.onTouch(event);
+        return true;
+    }
 }
