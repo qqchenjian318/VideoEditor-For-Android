@@ -3,5 +3,8 @@
     <string name="video">视频</string>
     <string name="record">录制</string>
     <string name="local_video_beauty">本地视频美颜</string>
+    <string name="audio_editor">音频处理</string>
+    <string name="video_select">选择视频</string>
     <string name="change_filter">左右滑动切换滤镜哟...</string>
+    <string name="confirm_to_editor_video">点击确定分离音频</string>
 </resources>

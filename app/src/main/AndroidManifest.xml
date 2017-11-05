@@ -27,6 +27,10 @@
                   android:screenOrientation="portrait"/>
         <activity android:name=".activity.PreviewActivity"
                   android:screenOrientation="portrait"/>
+        <activity android:name=".activity.AudioEditorActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.AudioPreviewActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

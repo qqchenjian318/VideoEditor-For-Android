@@ -16,9 +16,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Button recordBtn = (Button) findViewById(R.id.record_activity);
         Button selectBtn = (Button) findViewById(R.id.select_activity);
+        Button audioBtn = (Button) findViewById(R.id.audio_activity);
 
         recordBtn.setOnClickListener(this);
         selectBtn.setOnClickListener(this);
+        audioBtn.setOnClickListener(this);
 
     }
 
@@ -30,6 +32,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.select_activity:
                 startActivity(new Intent(MainActivity.this , VideoSelectActivity.class));
+                break;
+            case R.id.audio_activity:
+                startActivity(new Intent(MainActivity.this , AudioEditorActivity.class));
                 break;
         }
     }

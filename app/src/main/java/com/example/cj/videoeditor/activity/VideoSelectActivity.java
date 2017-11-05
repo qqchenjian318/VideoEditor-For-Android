@@ -1,7 +1,10 @@
 package com.example.cj.videoeditor.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -96,7 +99,8 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
     }
 
     @Override
-    public void onSelect(String path, String cover) {
+    public void onSelect(final String path, String cover) {
+        //处理音频，视频
         int videoTrack=-1;
         int audioTrack=-1;
         MediaExtractor extractor=new MediaExtractor();
@@ -134,11 +138,30 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
             Toast.makeText(this,"视频格式不支持",Toast.LENGTH_SHORT).show();
             return;
         }
-        //跳转预览界面 TODO
-        if(!TextUtils.isEmpty(path)){
-            Intent intent=new Intent(this,PreviewActivity.class);
-            intent.putExtra("path",path);
-            startActivity(intent);
-        }
+        AlertDialog.Builder mDialog = new AlertDialog.Builder(this);
+        mDialog.setMessage("去分离音频还是添加滤镜");
+        mDialog.setPositiveButton("加滤镜", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //跳转预览界面 TODO
+                if(!TextUtils.isEmpty(path)){
+                    Intent intent=new Intent(VideoSelectActivity.this,PreviewActivity.class);
+                    intent.putExtra("path",path);
+                    startActivity(intent);
+                }
+            }
+        });
+        mDialog.setNegativeButton("分离音频", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(!TextUtils.isEmpty(path)){
+                    Intent intent=new Intent(VideoSelectActivity.this,AudioPreviewActivity.class);
+                    intent.putExtra("path",path);
+                    startActivity(intent);
+                }
+            }
+        });
+        mDialog.show();
+
     }
 }
