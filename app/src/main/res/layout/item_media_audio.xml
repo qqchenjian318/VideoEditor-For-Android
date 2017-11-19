@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/audio_type"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:padding="4dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    <TextView
+        android:id="@+id/audio_name"
+        android:layout_toRightOf="@id/audio_type"
+        android:text="music name"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:textColor="#3d5afe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_below="@+id/audio_name"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/audio_size"
+            android:layout_marginRight="30dp"
+            android:textSize="16sp"
+            android:layout_marginLeft="70dp"
+            android:layout_centerVertical="true"
+            android:text="67.5kb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/audio_duration"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
+            android:layout_centerVertical="true"
+            android:text="01:30"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>

@@ -99,8 +99,21 @@ public class AudioPreviewActivity extends BaseActivity implements View.OnClickLi
                 previewView.pause();
                 showLoading("视频处理中",false);
 
-                final String path = Constants.getPath("video/temp/", "audio.pcm");//视频音乐
+                final String path = Constants.getPath("video/outputAudio/", "audio_"+System.currentTimeMillis()+".aac");//视频音乐
                 AudioCodec.getAudioFromVideo(mVideoPath, path, new AudioCodec.AudioDecodeListener() {
+                    @Override
+                    public void decodeOver() {
+                        Toast.makeText(AudioPreviewActivity.this,"分离完毕 音频保存路径为----  "+path,Toast.LENGTH_SHORT).show();
+                        endLoading();
+                    }
+
+                    @Override
+                    public void decodeFail() {
+                        Toast.makeText(AudioPreviewActivity.this,"分离失败 maybe same Exception ，please look at logcat ",Toast.LENGTH_SHORT).show();
+                        endLoading();
+                    }
+                });
+              /*  AudioCodec.getPCMFromAudio(mVideoPath, path, new AudioCodec.AudioDecodeListener() {
                     @Override
                     public void decodeOver() {
                         Toast.makeText(AudioPreviewActivity.this,"分离完毕 PCM保存路径为----  "+path,Toast.LENGTH_SHORT).show();
@@ -112,7 +125,7 @@ public class AudioPreviewActivity extends BaseActivity implements View.OnClickLi
                         Toast.makeText(AudioPreviewActivity.this,"分离失败 maybe same Exception ，please look at logcat ",Toast.LENGTH_SHORT).show();
                         endLoading();
                     }
-                });
+                });*/
 
                 break;
         }

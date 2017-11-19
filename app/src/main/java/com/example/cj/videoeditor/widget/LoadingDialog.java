@@ -40,7 +40,7 @@ public class LoadingDialog extends Dialog {
     /**
      * 是否可取消
      */
-    private boolean cancelable = true;
+    private boolean cancelable = false;
 
     public interface BlossomDialogListener {
         void onClick(View view);

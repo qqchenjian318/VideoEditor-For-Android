@@ -148,6 +148,7 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
                     Intent intent=new Intent(VideoSelectActivity.this,PreviewActivity.class);
                     intent.putExtra("path",path);
                     startActivity(intent);
+                    dialog.dismiss();
                 }
             }
         });
@@ -158,10 +159,10 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
                     Intent intent=new Intent(VideoSelectActivity.this,AudioPreviewActivity.class);
                     intent.putExtra("path",path);
                     startActivity(intent);
+                    dialog.dismiss();
                 }
             }
         });
         mDialog.show();
-
     }
 }

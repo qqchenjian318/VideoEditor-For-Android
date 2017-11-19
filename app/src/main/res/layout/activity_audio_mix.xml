@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/video_select"
-        android:text="@string/video_select"
+    <TextView
+        android:id="@+id/path_one"
+        android:text="音频路径"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
-        android:layout_gravity="center_horizontal"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
-        android:id="@+id/audio_select"
-        android:text="@string/audio_select"
+        android:id="@+id/select_one"
+        android:text="@string/audio_mix_select_one"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/path_two"
         android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
-        android:id="@+id/pcm_to_audio"
-        android:text="@string/pcm_2_audio"
-        android:layout_marginTop="30dp"
+        android:id="@+id/select_two"
+        android:text="@string/audio_mix_select_two"
+        android:layout_marginTop="5dp"
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/audio_mix"
         android:text="@string/audio_mix"
