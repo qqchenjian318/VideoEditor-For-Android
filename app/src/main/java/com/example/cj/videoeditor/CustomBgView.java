@@ -47,7 +47,6 @@ public class CustomBgView extends LinearLayout{
         Log.e("hero","---"+getWidth()+"---"+getHeight());
         Rect rect = new Rect(0,0,getWidth(),getHeight()-50);
 
-
         canvas.drawRect(rect,paint);
     }
 }
