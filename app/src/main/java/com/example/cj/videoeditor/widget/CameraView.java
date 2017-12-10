@@ -102,6 +102,11 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             open(cameraId);
         }
     }
+    public void onDestroy(){
+        if (mCamera != null){
+            mCamera.close();
+        }
+    }
 
     /**
      * 摄像头聚焦

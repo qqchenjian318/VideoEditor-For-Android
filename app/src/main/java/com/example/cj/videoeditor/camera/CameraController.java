@@ -113,6 +113,7 @@ public class CameraController implements ICamera{
         if (mCamera != null){
             mCamera.stopPreview();
             mCamera.release();
+            mCamera = null;
         }
         return false;
     }
