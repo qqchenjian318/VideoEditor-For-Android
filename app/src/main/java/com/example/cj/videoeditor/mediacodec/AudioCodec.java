@@ -33,7 +33,6 @@ import java.util.Arrays;
 public class AudioCodec {
     final static int TIMEOUT_USEC = 0;
     private static Handler handler = new Handler(Looper.getMainLooper());
-
     /**
      * 从视频文件中分离出音频，并保存到本地
      * */
