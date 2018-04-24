@@ -4,6 +4,7 @@
     <string name="record">录制</string>
     <string name="local_video_beauty">本地视频美颜</string>
     <string name="audio_editor">音频处理</string>
+    <string name="video_connect">视频拼接</string>
     <string name="video_select">选择视频</string>
     <string name="audio_select">选择音频</string>
     <string name="pcm_2_audio">PCM转音频</string>

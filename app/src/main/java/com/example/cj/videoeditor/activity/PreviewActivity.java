@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -186,6 +187,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                     }
                 });
                 try {
+                    Log.e("hero","-----PreviewActivity---clipVideo");
                     clipper.clipVideo(0,mVideoView.getVideoDuration()*1000);
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.example.cj.videoeditor.widget.TitleView
+        android:id="@+id/title_media_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:right_text="完成"
+        app:title_text="选择视频" />
+
+    <GridView
+        android:id="@+id/gridview_media_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="3"
+        android:horizontalSpacing="7.5dp"
+        android:verticalSpacing="7.5dp" />
+</LinearLayout>

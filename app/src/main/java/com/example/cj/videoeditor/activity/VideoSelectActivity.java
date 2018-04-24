@@ -143,7 +143,7 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
         mDialog.setPositiveButton("加滤镜", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //跳转预览界面 TODO
+                //跳转预览界面
                 if(!TextUtils.isEmpty(path)){
                     Intent intent=new Intent(VideoSelectActivity.this,PreviewActivity.class);
                     intent.putExtra("path",path);

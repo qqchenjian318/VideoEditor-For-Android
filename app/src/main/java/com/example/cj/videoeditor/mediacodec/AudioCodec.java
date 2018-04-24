@@ -458,7 +458,12 @@ public class AudioCodec {
 
                 outBitSize=encodeBufferInfo.size;
                 outPacketSize=outBitSize+7;//7为ADTS头部的大小
-                outputBuffer = encodeOutputBuffers[outputIndex];//拿到输出Buffer
+                if (Build.VERSION.SDK_INT >= 21){
+                    outputBuffer = mediaEncode.getOutputBuffer(outputIndex);//拿到输出Buffer
+                }else {
+                    outputBuffer = encodeOutputBuffers[outputIndex];//拿到输出Buffer
+                }
+
                 outputBuffer.position(encodeBufferInfo.offset);
                 outputBuffer.limit(encodeBufferInfo.offset + outBitSize);
                 chunkAudio = new byte[outPacketSize];

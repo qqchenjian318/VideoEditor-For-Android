@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="113dp"
-    android:layout_height="113dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
 
     <ImageView
+
         android:id="@+id/iv_media_video"
         android:layout_width="113dp"
         android:layout_height="113dp"
         android:scaleType="centerCrop" />
-    <TextView
-        android:id="@+id/tv_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
-        android:textSize="12sp"
-        android:textColor="#ffffff"
-        android:text="00:00"/>
+
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerInParent="true"-->
+    <!--android:src="@mipmap/ic_play" />-->
+
     <ImageView
+
         android:id="@+id/is_true"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -27,5 +26,4 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:src="@drawable/selector_btn_image_choose" />
-
 </RelativeLayout>

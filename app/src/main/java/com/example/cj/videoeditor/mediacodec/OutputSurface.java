@@ -22,7 +22,7 @@ import android.view.Surface;
 
 
 import com.example.cj.videoeditor.MyApplication;
-import com.example.cj.videoeditor.drawer.VideoDrawer;
+import com.example.cj.videoeditor.drawer.TextureRender;
 import com.example.cj.videoeditor.gpufilter.basefilter.GPUImageFilter;
 import com.example.cj.videoeditor.media.VideoInfo;
 
@@ -59,8 +59,8 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
     private Surface mSurface;
     private Object mFrameSyncObject = new Object();     // guards mFrameAvailable
     private boolean mFrameAvailable;
-//    private TextureRender mTextureRender;
-    private VideoDrawer mDrawer;
+    private TextureRender mTextureRender;
+//    private VideoDrawer mDrawer;
 
     /**
      * Creates an OutputSurface using the current EGL context.  Creates a Surface that can be
@@ -81,9 +81,20 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
 //        mTextureRender = new TextureRender(info);
 //        mTextureRender.surfaceCreated();
 
-        mDrawer = new VideoDrawer(MyApplication.getContext(),MyApplication.getContext().getResources());
+      /*  mDrawer = new VideoDrawer(MyApplication.getContext(),MyApplication.getContext().getResources());
+
         mDrawer.onSurfaceCreated(null,null);
-        mDrawer.onSurfaceChanged(null,info.width,info.height);
+        if (info.rotation == 0 || info.rotation == 180){
+            mDrawer.onSurfaceChanged(null,info.width,info.height);
+        }else {
+            mDrawer.onSurfaceChanged(null,info.height,info.width);
+        }
+        mDrawer.onVideoChanged(info);*/
+
+        mTextureRender = new TextureRender(info);
+        mTextureRender.surfaceCreated();
+        mTextureRender.onVideoSizeChanged(info);
+        mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
 
         // Even if we don't access the SurfaceTexture after the constructor returns, we
         // still need to keep a reference to it.  The Surface doesn't retain a reference
@@ -91,7 +102,7 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         // causes the native finalizer to run.
 //        if (VERBOSE) Log.d(TAG, "textureID=" + mTextureRender.getTextureId());
 //        mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
-        mSurfaceTexture = mDrawer.getSurfaceTexture();
+//        mSurfaceTexture = mDrawer.getSurfaceTexture();
 
         // This doesn't work if OutputSurface is created on the thread that CTS started for
         // these test cases.
@@ -198,8 +209,8 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         mEGLContext = null;
         mEGLSurface = null;
         mEGL = null;
-//        mTextureRender = null;
-        mDrawer = null;
+        mTextureRender = null;
+//        mDrawer = null;
         mSurface = null;
         mSurfaceTexture = null;
     }
@@ -258,15 +269,15 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         // Latch the data.
 //        mTextureRender.checkGlError("before updateTexImage");
 //        mDrawer.checkGlError("before updateTexImage");
-//        mSurfaceTexture.updateTexImage();
+        mSurfaceTexture.updateTexImage();
     }
 
     /**
      * Draws the data from SurfaceTexture onto the current EGL surface.
      */
     public void drawImage() {
-//        mTextureRender.drawFrame(mSurfaceTexture);
-        mDrawer.onDrawFrame(null);
+        mTextureRender.drawFrame(mSurfaceTexture);
+//        mDrawer.onDrawFrame(null);
     }
 
     @Override
@@ -297,13 +308,15 @@ class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         }
     }
     public void addGpuFilter(GPUImageFilter filter){
-        mDrawer.setGpuFilter(filter);
+//        mDrawer.setGpuFilter(filter);
+        mTextureRender.addGpuFilter(filter);
     }
     public void isBeauty(boolean isBeauty){
-        mDrawer.isOpenBeauty(isBeauty);
+//        mDrawer.isOpenBeauty(isBeauty);
+//        mTextureRender.isOpenBeauty(isBeauty);
     }
 
     public void onVideoSizeChanged(VideoInfo info){
-//        mTextureRender.onVideoSizeChanged(info);
+        mTextureRender.onVideoSizeChanged(info);
     }
 }

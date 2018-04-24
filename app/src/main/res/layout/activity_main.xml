@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,11 +34,13 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    <com.example.cj.videoeditor.CustomBgView
-        android:background="#00000000"
-        android:layout_width="200dp"
-        android:layout_height="200dp">
+    <Button
+        android:id="@+id/video_connect"
+        android:text="@string/video_connect"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
-    </com.example.cj.videoeditor.CustomBgView>
 
 </LinearLayout>
