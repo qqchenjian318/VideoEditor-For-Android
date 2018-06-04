@@ -26,14 +26,14 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
     private CameraDrawer mCameraDrawer;
     private CameraController mCamera;
 
-    private int dataWidth=0,dataHeight=0;
+    private int dataWidth = 0, dataHeight = 0;
 
     private boolean isSetParm = false;
 
     private int cameraId;
 
     public CameraView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public CameraView(Context context, AttributeSet attrs) {
@@ -56,68 +56,78 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
         mCamera = new CameraController();
 
     }
-    private void open(int cameraId){
+
+    private void open(int cameraId) {
         mCamera.close();
         mCamera.open(cameraId);
         mCameraDrawer.setCameraId(cameraId);
-        final Point previewSize=mCamera.getPreviewSize();
-        dataWidth=previewSize.x;
-        dataHeight=previewSize.y;
+        final Point previewSize = mCamera.getPreviewSize();
+        dataWidth = previewSize.x;
+        dataHeight = previewSize.y;
         SurfaceTexture texture = mCameraDrawer.getTexture();
         texture.setOnFrameAvailableListener(this);
         mCamera.setPreviewTexture(texture);
         mCamera.preview();
     }
-    public void switchCamera(){
-        cameraId = cameraId==0?1:0;
+    /**
+     * 切换前后置摄像头
+     * */
+    public void switchCamera() {
+        cameraId = cameraId == 0 ? 1 : 0;
+        mCameraDrawer.switchCamera();
         open(cameraId);
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mCameraDrawer.onSurfaceCreated(gl,config);
-        if (!isSetParm){
+        mCameraDrawer.onSurfaceCreated(gl, config);
+        if (!isSetParm) {
             open(cameraId);
             stickerInit();
         }
-        mCameraDrawer.setPreviewSize(dataWidth,dataHeight);
+        mCameraDrawer.setPreviewSize(dataWidth, dataHeight);
     }
+
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        mCameraDrawer.onSurfaceChanged(gl,width,height);
+        mCameraDrawer.onSurfaceChanged(gl, width, height);
     }
+
     @Override
     public void onDrawFrame(GL10 gl) {
-        if (isSetParm){
+        if (isSetParm) {
             mCameraDrawer.onDrawFrame(gl);
         }
     }
+
     /**
      * 每次Activity onResume时被调用,第一次不会打开相机
      */
     @Override
     public void onResume() {
         super.onResume();
-        if(isSetParm){
+        if (isSetParm) {
             open(cameraId);
         }
     }
-    public void onDestroy(){
-        if (mCamera != null){
+
+    public void onDestroy() {
+        if (mCamera != null) {
             mCamera.close();
         }
     }
 
     /**
      * 摄像头聚焦
-     * */
-    public void onFocus(Point point, Camera.AutoFocusCallback callback){
-        mCamera.onFocus(point,callback);
+     */
+    public void onFocus(Point point, Camera.AutoFocusCallback callback) {
+        mCamera.onFocus(point, callback);
     }
 
-    public int getCameraId(){
+    public int getCameraId() {
         return cameraId;
     }
+
     public int getBeautyLevel() {
         return mCameraDrawer.getBeautyLevel();
     }
@@ -130,7 +140,8 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             }
         });
     }
-    public void startRecord(){
+
+    public void startRecord() {
         queueEvent(new Runnable() {
             @Override
             public void run() {
@@ -139,7 +150,7 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
         });
     }
 
-    public void stopRecord(){
+    public void stopRecord() {
         queueEvent(new Runnable() {
             @Override
             public void run() {
@@ -147,9 +158,11 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             }
         });
     }
+
     public void setSavePath(String path) {
         mCameraDrawer.setSavePath(path);
     }
+
     public void resume(final boolean auto) {
         queueEvent(new Runnable() {
             @Override
@@ -158,6 +171,7 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             }
         });
     }
+
     public void pause(final boolean auto) {
         queueEvent(new Runnable() {
             @Override
@@ -166,7 +180,8 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             }
         });
     }
-    public void onTouch(final MotionEvent event){
+
+    public void onTouch(final MotionEvent event) {
         queueEvent(new Runnable() {
             @Override
             public void run() {
@@ -174,12 +189,13 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
             }
         });
     }
-    public void setOnFilterChangeListener(SlideGpuFilterGroup.OnFilterChangeListener listener){
+
+    public void setOnFilterChangeListener(SlideGpuFilterGroup.OnFilterChangeListener listener) {
         mCameraDrawer.setOnFilterChangeListener(listener);
     }
 
-    private void stickerInit(){
-        if(!isSetParm&&dataWidth>0&&dataHeight>0) {
+    private void stickerInit() {
+        if (!isSetParm && dataWidth > 0 && dataHeight > 0) {
             isSetParm = true;
         }
     }

@@ -33,7 +33,7 @@ public class AudioEditorActivity extends BaseActivity implements View.OnClickLis
         switch (v.getId()){
             case R.id.video_select:
                 //去选择视频
-                startActivity(new Intent(AudioEditorActivity.this , VideoSelectActivity.class));
+                VideoSelectActivity.openActivity(this);
                 break;
             case R.id.audio_select:
                 startActivity(new Intent(AudioEditorActivity.this , AudioSelectActivity.class));

@@ -18,7 +18,7 @@ import com.example.cj.videoeditor.utils.DensityUtils;
 /**
  * Description:
  */
-public class CircularProgressView extends ImageView {
+public class CircularProgressView extends android.support.v7.widget.AppCompatImageView {
 
     private int mStroke=5;
     private int mProcess=0;

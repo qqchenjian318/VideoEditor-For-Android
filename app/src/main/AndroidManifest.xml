@@ -36,6 +36,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.AudioMixActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".activity.VideoConnectActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

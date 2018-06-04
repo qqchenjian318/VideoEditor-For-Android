@@ -87,10 +87,10 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
             case MotionEvent.ACTION_UP:
                 float sRawX = event.getRawX();
                 float sRawY = event.getRawY();
-                float rawY = sRawY * MyApplication.screenWidth / MyApplication.screenHeight;
+                float rawY = sRawY * Constants.screenWidth / Constants.screenHeight;
                 float temp = sRawX;
                 float rawX = rawY;
-                rawY = (MyApplication.screenWidth - temp) * MyApplication.screenHeight / MyApplication.screenWidth;
+                rawY = (Constants.screenWidth - temp) * Constants.screenHeight / Constants.screenWidth;
 
                 Point point = new Point((int) rawX, (int) rawY);
                 mCameraView.onFocus(point, callback);
@@ -117,7 +117,7 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
         if (mCameraView.getCameraId() == 1) {
             return;
         }
-        Point point = new Point(MyApplication.screenWidth / 2, MyApplication.screenHeight / 2);
+        Point point = new Point(Constants.screenWidth / 2, Constants.screenHeight / 2);
         mCameraView.onFocus(point, callback);
     }
     @Override

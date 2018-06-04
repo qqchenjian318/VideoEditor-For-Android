@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by qqche_000 on 2017/11/19.
+ * Created by cj on 2017/11/19.
  * 本地音频选择界面
  */
 
@@ -57,7 +57,7 @@ public class AudioSelectActivity extends BaseActivity implements View.OnClickLis
                 Song song = data.get(position);
                 final String path = song.getPath();
                 Log.e("hero", "---select audio path " + path);
-                if (TYPE_EX.equals(type)){
+                if (TYPE_EX.equals(type) || TextUtils.isEmpty(type)){
                     showExDialog(path);
 
                 }else if (TYPE_MIX.equals(type)){
@@ -72,12 +72,12 @@ public class AudioSelectActivity extends BaseActivity implements View.OnClickLis
     }
     public void showExDialog(final String path){
         AlertDialog.Builder mDialog = new AlertDialog.Builder(AudioSelectActivity.this);
-        mDialog.setMessage("分离音频还是???");
-        mDialog.setPositiveButton("加滤镜", new DialogInterface.OnClickListener() {
+        mDialog.setMessage("音频转原始音频格式");
+        mDialog.setPositiveButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //跳转预览界面 TODO
-
+                //跳转预览界面
+                dialog.dismiss();
             }
         });
         mDialog.setNegativeButton("音频转PCM", new DialogInterface.OnClickListener() {
@@ -117,16 +117,7 @@ public class AudioSelectActivity extends BaseActivity implements View.OnClickLis
 
         data = new ArrayList<>();
         Log.e("hero", "--begin read audio data");
-       /* Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME,
-                        MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,
-                        MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.MIME_TYPE,
-                        MediaStore.Audio.Media.SIZE, MediaStore.Audio.Media.DATA},
-                MediaStore.Audio.Media.MIME_TYPE + "=? or "
-                        + MediaStore.Audio.Media.MIME_TYPE + "=? or " + MediaStore.Audio.Media.MIME_TYPE + "=? or "
-                + MediaStore.Audio.Media.MIME_TYPE + "=?",
-                new String[]{"audio/mpeg", "audio/x-ms-wma", "audio/mp4a-latm","audio/raw"}, null);*/
+
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME,
                         MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DURATION,

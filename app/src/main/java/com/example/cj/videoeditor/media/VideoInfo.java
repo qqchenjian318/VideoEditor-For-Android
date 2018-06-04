@@ -1,11 +1,13 @@
 package com.example.cj.videoeditor.media;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2017/6/29 0029.
  * 视频的信息bean
  */
 
-public class VideoInfo {
+public class VideoInfo implements Serializable{
     public String path;//路径
     public int rotation;//旋转角度
     public int width;//宽

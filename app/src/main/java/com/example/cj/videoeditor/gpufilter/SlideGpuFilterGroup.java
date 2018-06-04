@@ -264,11 +264,11 @@ public class SlideGpuFilterGroup {
                 }
                 locked = true;
                 downX = -1;
-                if (offset > MyApplication.screenWidth / 3) {
-                    scroller.startScroll(offset, 0, MyApplication.screenWidth - offset, 0, 100 * (1 - offset / MyApplication.screenWidth));
+                if (offset > Constants.screenWidth / 3) {
+                    scroller.startScroll(offset, 0, Constants.screenWidth - offset, 0, 100 * (1 - offset / Constants.screenWidth));
                     needSwitch = true;
                 } else {
-                    scroller.startScroll(offset, 0, -offset, 0, 100 * (offset / MyApplication.screenWidth));
+                    scroller.startScroll(offset, 0, -offset, 0, 100 * (offset / Constants.screenWidth));
                     needSwitch = false;
                 }
                 break;

@@ -4,12 +4,15 @@
     <string name="record">录制</string>
     <string name="local_video_beauty">本地视频美颜</string>
     <string name="audio_editor">音频处理</string>
+    <string name="video_connect">视频拼接</string>
     <string name="video_select">选择视频</string>
     <string name="audio_select">选择音频</string>
     <string name="pcm_2_audio">PCM转音频</string>
     <string name="audio_mix">音频混合</string>
     <string name="audio_mix_select_one">选择第一个音频</string>
+    <string name="video_connect_select_one">选择第一个视频</string>
     <string name="audio_mix_select_two">选择第二个音频</string>
+    <string name="video_connect_select_two">选择第二个视频</string>
     <string name="change_filter">左右滑动切换滤镜哟...</string>
     <string name="confirm_to_editor_video">点击确定分离音频</string>
 </resources>

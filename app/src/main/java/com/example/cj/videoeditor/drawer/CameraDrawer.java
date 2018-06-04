@@ -128,6 +128,7 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
     }
 
 
+
     @Override
     public void onSurfaceChanged(GL10 gl10, int i, int i1) {
         width = i;
@@ -160,11 +161,28 @@ public class CameraDrawer implements GLSurfaceView.Renderer {
         MatrixUtils.getShowMatrix(SM,mPreviewWidth, mPreviewHeight, width, height);
         showFilter.setMatrix(SM);
     }
-
+    /**
+     * 切换摄像头的时候
+     * 会出现画面颠倒的情况
+     * 通过跳帧来解决
+     * */
+    boolean switchCamera=false;
+    int skipFrame;
+    public void switchCamera() {
+        switchCamera=true;
+    }
     @Override
     public void onDrawFrame(GL10 gl10) {
         /**更新界面中的数据*/
         mSurfaceTextrue.updateTexImage();
+        if(switchCamera){
+            skipFrame++;
+            if(skipFrame>1){
+                skipFrame=0;
+                switchCamera=false;
+            }
+            return;
+        }
 
         EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
         GLES20.glViewport(0,0,mPreviewWidth,mPreviewHeight);

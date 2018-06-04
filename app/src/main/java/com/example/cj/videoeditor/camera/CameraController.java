@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
 
+import com.example.cj.videoeditor.Constants;
 import com.example.cj.videoeditor.MyApplication;
 
 import java.io.IOException;
@@ -137,8 +138,8 @@ public class CameraController implements ICamera{
         List<Camera.Area> areas = new ArrayList<Camera.Area>();
         List<Camera.Area> areas1 = new ArrayList<Camera.Area>();
         //再次进行转换
-        point.x= (int) (((float)point.x)/ MyApplication.screenWidth*2000-1000);
-        point.y= (int) (((float)point.y)/MyApplication.screenHeight*2000-1000);
+        point.x= (int) (((float)point.x)/ Constants.screenWidth*2000-1000);
+        point.y= (int) (((float)point.y)/Constants.screenHeight*2000-1000);
 
         int left = point.x - 300;
         int top = point.y - 300;

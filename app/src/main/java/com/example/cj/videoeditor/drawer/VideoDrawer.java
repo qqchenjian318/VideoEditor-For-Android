@@ -7,6 +7,7 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.cj.videoeditor.R;
@@ -134,13 +135,20 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+
         surfaceTexture.updateTexImage();
+
         EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
+
         GLES20.glViewport(0,0,viewWidth,viewHeight);
+
         mPreFilter.draw();
+
         EasyGlUtils.unBindFrameBuffer();
 
+
         mBeFilter.setTextureId(fTexture[0]);
+
         mBeFilter.draw();
 
         if (mBeautyFilter != null && isBeauty && mBeautyFilter.getBeautyLevel() != 0){
@@ -150,11 +158,13 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
             EasyGlUtils.unBindFrameBuffer();
             mProcessFilter.setTextureId(fTexture[0]);
         }else {
+
             mProcessFilter.setTextureId(mBeFilter.getOutputTexture());
         }
         mProcessFilter.draw();
 
         mSlideFilterGroup.onDrawFrame(mProcessFilter.getOutputTexture());
+
         if (mGroupFilter != null){
             EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
             GLES20.glViewport(0,0,viewWidth,viewHeight);
@@ -164,12 +174,16 @@ public class VideoDrawer implements GLSurfaceView.Renderer {
         }else {
             mProcessFilter.setTextureId(mSlideFilterGroup.getOutputTexture());
         }
+
         mProcessFilter.draw();
+
 
         GLES20.glViewport(0,0,viewWidth,viewHeight);
 
         mShow.setTextureId(mProcessFilter.getOutputTexture());
+
         mShow.draw();
+        Log.e("videoo", "---卡完了 ？");
     }
     public SurfaceTexture getSurfaceTexture(){
         return surfaceTexture;

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.example.cj.videoeditor.utils.MatrixUtils;
+import com.example.cj.videoeditor.utils.OpenGlUtils;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -106,11 +107,17 @@ public abstract class AFilter {
     }
 
     public void draw(){
+        Log.e("videoo", "---卡主了？ 16  "+getClass());
         onClear();
+        Log.e("videoo", "---卡主了？ 17");
         onUseProgram();
+        Log.e("videoo", "---卡主了？ 18");
         onSetExpandData();
+        Log.e("videoo", "---卡主了？ 19");
         onBindTexture();
+        Log.e("videoo", "---卡主了？ 20");
         onDraw();
+        Log.e("videoo", "---卡主了？ 21");
     }
 
     public final void setMatrix(float[] matrix){
@@ -207,7 +214,7 @@ public abstract class AFilter {
     }
 
     protected final void createProgramByAssetsFile(String vertex, String fragment){
-        createProgram(uRes(mRes,vertex),uRes(mRes,fragment));
+        createProgram(OpenGlUtils.uRes(vertex),OpenGlUtils.uRes(fragment));
     }
 
     /**
@@ -247,7 +254,9 @@ public abstract class AFilter {
      * 清除画布
      */
     protected void onClear(){
+
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
     }
 
@@ -271,22 +280,6 @@ public abstract class AFilter {
         if(DEBUG&&code!=0){
             Log.e(TAG,"glError:"+code+"---"+index);
         }
-    }
-
-    //通过路径加载Assets中的文本内容
-    public static String uRes(Resources mRes, String path){
-        StringBuilder result=new StringBuilder();
-        try{
-            InputStream is=mRes.getAssets().open(path);
-            int ch;
-            byte[] buffer=new byte[1024];
-            while (-1!=(ch=is.read(buffer))){
-                result.append(new String(buffer,0,ch));
-            }
-        }catch (Exception e){
-            return null;
-        }
-        return result.toString().replaceAll("\\r\\n","\n");
     }
 
     //创建GL程序

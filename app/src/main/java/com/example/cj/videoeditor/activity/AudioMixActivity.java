@@ -18,7 +18,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by qqche_000 on 2017/11/19.
+ * Created by cj on 2017/11/19.
+ * 音频混音的页面
  */
 
 public class AudioMixActivity extends BaseActivity implements View.OnClickListener {
