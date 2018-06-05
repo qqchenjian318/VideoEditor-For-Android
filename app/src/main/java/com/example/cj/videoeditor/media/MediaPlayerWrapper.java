@@ -3,6 +3,7 @@ package com.example.cj.videoeditor.media;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.Surface;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class MediaPlayerWrapper implements MediaPlayer.OnCompletionListener, Med
     /**
      * get video info and store
      *
-     * @param dataSource
+     * @param dataSource 视频播放的源文件
      */
     public void setDataSource(List<String> dataSource) {
         this.mSrcList = dataSource;
@@ -55,7 +56,6 @@ public class MediaPlayerWrapper implements MediaPlayer.OnCompletionListener, Med
             info.width = Integer.parseInt(width);
             info.height = Integer.parseInt(height);
             info.duration = Integer.parseInt(duration);
-
             mInfoList.add(info);
         }
     }

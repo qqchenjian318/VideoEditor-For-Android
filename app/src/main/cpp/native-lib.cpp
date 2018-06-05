@@ -72,3 +72,17 @@ Java_com_example_cj_videoeditor_jni_AudioJniUtils_audioMix(JNIEnv *env, jclass t
 
 }
 
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_example_cj_videoeditor_jni_AudioJniUtils_putString(JNIEnv *env, jclass type,
+                                                            jstring info_) {
+    const char *info = env->GetStringUTFChars(info_, 0);
+    char buf[128];
+    if (info == NULL)
+        return NULL;
+    sprintf(buf,"From C %s ",info);
+
+    env->ReleaseStringUTFChars(info_, info);
+
+    return env->NewStringUTF(buf);
+}

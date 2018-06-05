@@ -240,6 +240,7 @@ public class VideoRunnable extends Thread {
                         Log.e("videooo", "---在编码画面帧的时候，重置时间戳===" + encodeInputTimeStamp);
                         inputSurface.setPresentationTime(encodeInputTimeStamp * 1000);
                         inputSurface.swapBuffers();
+
                     }else {
                         Log.e("videoo", "---解码出来的视频有问题=== " +doRender+"   "+isUseful);
                     }
@@ -247,6 +248,12 @@ public class VideoRunnable extends Thread {
                     /*判断解码器是否解码完毕了*/
                     if ((decodeOutputInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                         /*
+
+                    }
+                    lastVideoTime = decodeOutputInfo.presentationTimeUs;
+                    /**判断解码器是否解码完毕了*/
+                    if ((decodeOutputInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        /**
                          * 解码器解码完成了，说明该分离器的数据写入完成了 并且都已经解码完成了
                          * 更换分离器和解码器或者结束编解码
                          * */

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+             android:background="#000000">
+
+    <com.example.cj.videoeditor.widget.VideoPreviewView
+        android:id="@+id/connect_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerInside"
+                android:src="@mipmap/editor_record_back"/>
+
+            <ImageView
+                android:id="@+id/iv_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:scaleType="centerInside"
+                android:src="@mipmap/editor_img_confirm"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</FrameLayout>

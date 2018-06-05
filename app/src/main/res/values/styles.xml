@@ -27,4 +27,14 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
     </style>
+    <declare-styleable name="TitleView">
+        <attr name="title_text" format="string" />
+        <attr name="right_text" format="string" />
+        <attr name="right_num_text" format="string" />
+        <attr name="right_pic" format="reference" />
+        <attr name="left_pic" format="reference" />
+        <attr name="left_text" format="string" />
+        <attr name="title_background" format="color|reference" />
+        <attr name="title_underline" format="boolean" />
+    </declare-styleable>
 </resources>

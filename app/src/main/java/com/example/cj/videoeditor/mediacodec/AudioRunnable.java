@@ -2,6 +2,7 @@ package com.example.cj.videoeditor.mediacodec;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
@@ -12,6 +13,9 @@ import android.util.Log;
 
 import com.example.cj.videoeditor.jni.AudioJniUtils;
 import com.example.cj.videoeditor.media.MediaCodecInfo;
+import com.example.cj.videoeditor.Constants;
+import com.example.cj.videoeditor.bean.AudioSettingInfo;
+import com.example.cj.videoeditor.bean.MediaDecode;
 import com.example.cj.videoeditor.media.VideoInfo;
 
 import java.io.File;
@@ -32,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class AudioRunnable extends Thread {
     final int TIMEOUT_USEC = 0;
+    private AudioSettingInfo mSettingInfo;//混音设置
 
     private int audioTrackIndex = -1;
     private MediaFormat audioMediaFormat;
