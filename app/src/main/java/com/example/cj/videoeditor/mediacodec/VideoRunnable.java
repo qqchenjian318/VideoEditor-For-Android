@@ -142,7 +142,7 @@ public class VideoRunnable extends Thread {
              * */
             if (!inputDone) {
                 int inputIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC);
-                Log.e("videoo", "---解码器 是否可用  "+inputIndex);
+                Log.e("videoo", "---解码器 是否可用  " + inputIndex);
                 if (inputIndex >= 0) {
                     /*说明解码器有可用的ByteBuffer*/
                     ByteBuffer inputBuffer = inputBuffers[inputIndex];
@@ -188,7 +188,7 @@ public class VideoRunnable extends Thread {
             while (!decodeOutputDone || !encodeDone) {
                 /*说明解码器的输出output有数据*/
                 int outputIndex = decoder.dequeueOutputBuffer(decodeOutputInfo, TIMEOUT_USEC);
-                Log.e("videoo","  解码器出来的index   "+outputIndex);
+                Log.e("videoo", "  解码器出来的index   " + outputIndex);
                 if (outputIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
                     /*没有可用的解码器output*/
                     decodeOutputDone = true;
@@ -217,7 +217,7 @@ public class VideoRunnable extends Thread {
                          * 是有效数据 让他写到编码器中
                          * 并且对时间戳 进行重写
                          * */
-                        Log.e("videoo", "---卡主了？ 一  "+ decodeOutputInfo.size);
+                        Log.e("videoo", "---卡主了？ 一  " + decodeOutputInfo.size);
                         outputSurface.awaitNewImage();
                         Log.e("videoo", "---卡住了  === 二");
                         outputSurface.drawImage();
@@ -241,17 +241,11 @@ public class VideoRunnable extends Thread {
                         inputSurface.setPresentationTime(encodeInputTimeStamp * 1000);
                         inputSurface.swapBuffers();
 
-                    }else {
-                        Log.e("videoo", "---解码出来的视频有问题=== " +doRender+"   "+isUseful);
+                    } else {
+                        Log.e("videoo", "---解码出来的视频有问题=== " + doRender + "   " + isUseful);
                     }
                     lastVideoTime = decodeOutputInfo.presentationTimeUs;
-                    /*判断解码器是否解码完毕了*/
-                    if ((decodeOutputInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                        /*
 
-                    }
-                    lastVideoTime = decodeOutputInfo.presentationTimeUs;
-                    /**判断解码器是否解码完毕了*/
                     if ((decodeOutputInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                         /**
                          * 解码器解码完成了，说明该分离器的数据写入完成了 并且都已经解码完成了
@@ -330,6 +324,7 @@ public class VideoRunnable extends Thread {
         long end = System.currentTimeMillis();
         Log.e("timee", "---视频编码完成---视频编码耗时-==" + (end - start));
     }
+
 
     private void prepare() throws IOException {
         mExtractors = new ArrayList<>();

@@ -39,7 +39,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startActivity(new Intent(MainActivity.this , AudioEditorActivity.class));
                 break;
             case R.id.video_connect:
-                Toast.makeText(this,"该功能还未完成！！！",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this,"该功能还未完成！！！",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this , VideoConnectActivity.class));
                 break;
         }
     }

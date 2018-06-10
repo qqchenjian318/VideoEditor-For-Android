@@ -2,20 +2,14 @@ package com.example.cj.videoeditor.mediacodec;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.Log;
 
-
-import com.example.cj.videoeditor.jni.AudioJniUtils;
-import com.example.cj.videoeditor.media.MediaCodecInfo;
-import com.example.cj.videoeditor.Constants;
 import com.example.cj.videoeditor.bean.AudioSettingInfo;
-import com.example.cj.videoeditor.bean.MediaDecode;
+import com.example.cj.videoeditor.media.MediaCodecInfo;
 import com.example.cj.videoeditor.media.VideoInfo;
 
 import java.io.File;
@@ -603,7 +597,7 @@ public class AudioRunnable extends Thread {
                 isFirstSeek = true;
             }
             while (true) {
-                int readSampleData = mAudioDecode.extractor.readSampleData(buffer, 0);
+                int readSampleData = mExtractor.readSampleData(buffer, 0);
                 if (readSampleData < 0) {
                     //说明 本地读取完毕了
                     curIndex++;

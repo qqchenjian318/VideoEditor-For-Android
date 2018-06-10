@@ -132,9 +132,7 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
                 if (format.getString(MediaFormat.KEY_MIME).startsWith("video/")) {
                     videoTrack=i;
                     String videoMime = format.getString(MediaFormat.KEY_MIME);
-                    if(!MediaFormat.MIMETYPE_VIDEO_AVC.equals(videoMime) &&
-                            !MediaFormat.MIMETYPE_VIDEO_HEVC.equals(videoMime)&&
-                            !MediaFormat.MIMETYPE_VIDEO_MPEG4.equals(videoMime)){
+                    if(!MediaFormat.MIMETYPE_VIDEO_AVC.equals(videoMime) ){
                         Toast.makeText(this,"视频格式不支持",Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -143,7 +141,7 @@ public class VideoSelectActivity extends BaseActivity implements LoaderManager.L
                 if (format.getString(MediaFormat.KEY_MIME).startsWith("audio/")) {
                     audioTrack=i;
                     String audioMime = format.getString(MediaFormat.KEY_MIME);
-                    if(!MediaFormat.MIMETYPE_AUDIO_AAC.equals(audioMime) && !MediaFormat.MIMETYPE_AUDIO_MPEG.equals(audioMime)){
+                    if(!MediaFormat.MIMETYPE_AUDIO_AAC.equals(audioMime)){
                         Toast.makeText(this,"视频格式不支持",Toast.LENGTH_SHORT).show();
                         return;
                     }
