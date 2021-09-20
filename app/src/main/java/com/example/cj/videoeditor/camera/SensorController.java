@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.opengl.GLES20;
 import android.util.Log;
 
 import com.example.cj.videoeditor.MyApplication;
@@ -15,7 +14,7 @@ import java.util.Calendar;
 /**
  * 加速度控制器  用来控制对焦
  */
-public class SensorControler implements SensorEventListener {
+public class SensorController implements SensorEventListener {
     public static final String TAG = "SensorControler";
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -37,18 +36,18 @@ public class SensorControler implements SensorEventListener {
 
     private CameraFocusListener mCameraFocusListener;
 
-    private static SensorControler mInstance;
+    private static SensorController mInstance;
 
     private int foucsing = 1;  //1 表示没有被锁定 0表示被锁定
 
-    private SensorControler() {
+    private SensorController() {
         mSensorManager = (SensorManager) MyApplication.getContext().getSystemService(Activity.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);// TYPE_GRAVITY
     }
 
-    public static SensorControler getInstance() {
+    public static SensorController getInstance() {
         if (mInstance == null) {
-            mInstance = new SensorControler();
+            mInstance = new SensorController();
         }
         return mInstance;
     }
@@ -73,7 +72,6 @@ public class SensorControler implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
 
 
     @Override
@@ -157,7 +155,7 @@ public class SensorControler implements SensorEventListener {
      * @return
      */
     public boolean isFocusLocked() {
-        if(canFocus) {
+        if (canFocus) {
             return foucsing <= 0;
         }
         return false;
@@ -181,7 +179,7 @@ public class SensorControler implements SensorEventListener {
         Log.i(TAG, "unlockFocus");
     }
 
-    public void restFoucs() {
+    public void restFocus() {
         foucsing = 1;
     }
 

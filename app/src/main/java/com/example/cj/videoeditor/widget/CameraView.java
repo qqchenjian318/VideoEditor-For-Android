@@ -61,9 +61,9 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer,
         mCamera.close();
         mCamera.open(cameraId);
         mCameraDrawer.setCameraId(cameraId);
-        final Point previewSize = mCamera.getPreviewSize();
-        dataWidth = previewSize.x;
-        dataHeight = previewSize.y;
+        final Camera.Size previewSize = mCamera.getPreviewSize();
+        dataWidth = previewSize.width;
+        dataHeight = previewSize.height;
         SurfaceTexture texture = mCameraDrawer.getTexture();
         texture.setOnFrameAvailableListener(this);
         mCamera.setPreviewTexture(texture);

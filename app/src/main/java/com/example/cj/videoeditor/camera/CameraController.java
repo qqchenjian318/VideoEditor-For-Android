@@ -21,53 +21,54 @@ import java.util.List;
  * 包括预览和录制尺寸、闪光灯、曝光、聚焦、摄像头切换等
  */
 
-public class CameraController implements ICamera{
-    /**相机的宽高及比例配置*/
+public class CameraController implements ICamera {
+    /**
+     * 相机的宽高及比例配置
+     */
     private ICamera.Config mConfig;
-    /**相机实体*/
+    /**
+     * 相机实体
+     */
     private Camera mCamera;
-    /**预览的尺寸*/
+    /**
+     * 预览的尺寸
+     */
     private Camera.Size preSize;
-    /**实际的尺寸*/
+    /**
+     * 实际的尺寸
+     */
     private Camera.Size picSize;
 
-    private Point mPreSize ;
-    private Point mPicSize ;
 
-
-    public CameraController(){
-        /**初始化一个默认的格式大小*/
+    public CameraController() {
+        /*初始化一个默认的格式大小*/
         mConfig = new ICamera.Config();
-        mConfig.minPreviewWidth=720;
-        mConfig.minPictureWidth=720;
-        mConfig.rate=1.778f;
+        mConfig.minPreviewWidth = 720;
+        mConfig.minPictureWidth = 720;
+        mConfig.rate = 1.778f;
     }
 
     public void open(int cameraId) {
         mCamera = Camera.open(cameraId);
-        if (mCamera != null){
-            /**选择当前设备允许的预览尺寸*/
+        if (mCamera != null) {
+            /*选择当前设备允许的预览尺寸*/
             Camera.Parameters param = mCamera.getParameters();
             preSize = getPropPreviewSize(param.getSupportedPreviewSizes(), mConfig.rate,
                     mConfig.minPreviewWidth);
-            picSize = getPropPictureSize(param.getSupportedPictureSizes(),mConfig.rate,
+            picSize = getPropPictureSize(param.getSupportedPictureSizes(), mConfig.rate,
                     mConfig.minPictureWidth);
             param.setPictureSize(picSize.width, picSize.height);
-            param.setPreviewSize(preSize.width,preSize.height);
+            param.setPreviewSize(preSize.width, preSize.height);
 
             mCamera.setParameters(param);
-            Camera.Size pre=param.getPreviewSize();
-            Camera.Size pic=param.getPictureSize();
-            mPicSize=new Point(pic.height,pic.width);
-            mPreSize=new Point(pre.height,pre.width);
         }
     }
 
     @Override
     public void setPreviewTexture(SurfaceTexture texture) {
-        if(mCamera!=null){
+        if (mCamera != null) {
             try {
-                Log.e("hero","----setPreviewTexture");
+                Log.e("hero", "----setPreviewTexture");
                 mCamera.setPreviewTexture(texture);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -77,16 +78,16 @@ public class CameraController implements ICamera{
 
     @Override
     public void setConfig(Config config) {
-        this.mConfig=config;
+        this.mConfig = config;
     }
 
     @Override
     public void setOnPreviewFrameCallback(final PreviewFrameCallback callback) {
-        if(mCamera!=null){
+        if (mCamera != null) {
             mCamera.setPreviewCallback(new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
-                    callback.onPreviewFrame(data,mPreSize.x,mPreSize.y);
+                    callback.onPreviewFrame(data, preSize.width, preSize.height);
                 }
             });
         }
@@ -94,24 +95,19 @@ public class CameraController implements ICamera{
 
     @Override
     public void preview() {
-        if (mCamera != null){
+        if (mCamera != null) {
             mCamera.startPreview();
         }
     }
 
     @Override
-    public Point getPreviewSize() {
-        return mPreSize;
-    }
-
-    @Override
-    public Point getPictureSize() {
-        return mPicSize;
+    public Camera.Size getPreviewSize() {
+        return preSize;
     }
 
     @Override
     public boolean close() {
-        if (mCamera != null){
+        if (mCamera != null) {
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -126,20 +122,20 @@ public class CameraController implements ICamera{
      */
     public void onFocus(Point point, Camera.AutoFocusCallback callback) {
         Camera.Parameters parameters = mCamera.getParameters();
-        boolean supportFocus=true;
-        boolean supportMetering=true;
+        boolean supportFocus = true;
+        boolean supportMetering = true;
         //不支持设置自定义聚焦，则使用自动聚焦，返回
         if (parameters.getMaxNumFocusAreas() <= 0) {
-            supportFocus=false;
+            supportFocus = false;
         }
-        if (parameters.getMaxNumMeteringAreas() <= 0){
-            supportMetering=false;
+        if (parameters.getMaxNumMeteringAreas() <= 0) {
+            supportMetering = false;
         }
         List<Camera.Area> areas = new ArrayList<Camera.Area>();
         List<Camera.Area> areas1 = new ArrayList<Camera.Area>();
         //再次进行转换
-        point.x= (int) (((float)point.x)/ Constants.screenWidth*2000-1000);
-        point.y= (int) (((float)point.y)/Constants.screenHeight*2000-1000);
+        point.x = (int) (((float) point.x) / Constants.screenWidth * 2000 - 1000);
+        point.y = (int) (((float) point.y) / Constants.screenHeight * 2000 - 1000);
 
         int left = point.x - 300;
         int top = point.y - 300;
@@ -151,10 +147,10 @@ public class CameraController implements ICamera{
         bottom = bottom > 1000 ? 1000 : bottom;
         areas.add(new Camera.Area(new Rect(left, top, right, bottom), 100));
         areas1.add(new Camera.Area(new Rect(left, top, right, bottom), 100));
-        if(supportFocus){
+        if (supportFocus) {
             parameters.setFocusAreas(areas);
         }
-        if(supportMetering){
+        if (supportMetering) {
             parameters.setMeteringAreas(areas1);
         }
 
@@ -166,50 +162,54 @@ public class CameraController implements ICamera{
         }
 
     }
-    private Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth){
+
+    private Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth) {
         Collections.sort(list, sizeComparator);
         int i = 0;
-        for(Camera.Size s:list){
-            if((s.height >= minWidth) && equalRate(s, th)){
+        for (Camera.Size s : list) {
+            if ((s.height >= minWidth) && equalRate(s, th)) {
                 break;
             }
             i++;
         }
-        if(i == list.size()){
+        if (i == list.size()) {
             i = 0;
         }
         return list.get(i);
     }
-    private Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth){
+
+    private Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth) {
         Collections.sort(list, sizeComparator);
 
         int i = 0;
-        for(Camera.Size s:list){
-            if((s.height >= minWidth) && equalRate(s, th)){
+        for (Camera.Size s : list) {
+            if ((s.height >= minWidth) && equalRate(s, th)) {
                 break;
             }
             i++;
         }
-        if(i == list.size()){
+        if (i == list.size()) {
             i = 0;
         }
         return list.get(i);
     }
-    private static boolean equalRate(Camera.Size s, float rate){
-        float r = (float)(s.width)/(float)(s.height);
-        if(Math.abs(r - rate) <= 0.03) {
+
+    private static boolean equalRate(Camera.Size s, float rate) {
+        float r = (float) (s.width) / (float) (s.height);
+        if (Math.abs(r - rate) <= 0.03) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    private Comparator<Camera.Size> sizeComparator=new Comparator<Camera.Size>(){
+
+    private final Comparator<Camera.Size> sizeComparator = new Comparator<Camera.Size>() {
         public int compare(Camera.Size lhs, Camera.Size rhs) {
-            if(lhs.height == rhs.height){
+            if (lhs.height == rhs.height) {
                 return 0;
-            }else if(lhs.height > rhs.height){
+            } else if (lhs.height > rhs.height) {
                 return 1;
-            }else{
+            } else {
                 return -1;
             }
         }

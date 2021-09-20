@@ -13,9 +13,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.cj.videoeditor.Constants;
-import com.example.cj.videoeditor.MyApplication;
 import com.example.cj.videoeditor.R;
-import com.example.cj.videoeditor.camera.SensorControler;
+import com.example.cj.videoeditor.camera.SensorController;
 import com.example.cj.videoeditor.gpufilter.SlideGpuFilterGroup;
 import com.example.cj.videoeditor.gpufilter.helper.MagicFilterType;
 import com.example.cj.videoeditor.widget.CameraView;
@@ -31,7 +30,7 @@ import java.util.concurrent.Executors;
  * 主要包括 音视频录制、断点续录、对焦等功能
  */
 
-public class RecordedActivity extends BaseActivity implements View.OnClickListener, View.OnTouchListener, SensorControler.CameraFocusListener, SlideGpuFilterGroup.OnFilterChangeListener {
+public class RecordedActivity extends BaseActivity implements View.OnClickListener, View.OnTouchListener, SensorController.CameraFocusListener, SlideGpuFilterGroup.OnFilterChangeListener {
 
     private CameraView mCameraView;
     private CircularProgressView mCapture;
@@ -43,20 +42,18 @@ public class RecordedActivity extends BaseActivity implements View.OnClickListen
     private boolean pausing = false;
     private boolean recordFlag = false;//是否正在录制
 
-    private int WIDTH = 720,HEIGHT = 1280;
-
     private long timeStep = 50;//进度条刷新的时间
     long timeCount = 0;//用于记录录制时间
     private boolean autoPausing = false;
     ExecutorService executorService;
-    private SensorControler mSensorControler;
+    private SensorController mSensorControler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorde);
         executorService = Executors.newSingleThreadExecutor();
-        mSensorControler = SensorControler.getInstance();
+        mSensorControler = SensorController.getInstance();
         mSensorControler.setCameraFocusListener(this);
         initView();
     }
